@@ -50,4 +50,21 @@
     <string name="error_invalid_guide">Yayın akışı okunamadı.</string>
     <string name="error_storage">Veriler cihaza kaydedilemedi. Biraz yer açıp tekrar deneyin.</string>
     <string name="error_unknown">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
+
+    <!-- Content types / categories -->
+    <string name="type_live">Canlı</string>
+    <string name="type_movie">Filmler</string>
+    <string name="type_series">Diziler</string>
+    <string name="type_hidden">Gizli</string>
+    <string name="type_auto">Otomatik (%1$s)</string>
+    <string name="filter_all">Tümü</string>
+    <string name="filter_changed">Değiştirilen</string>
+    <string name="category_uncategorized">Kategorisiz</string>
+    <plurals name="items_count">
+        <item quantity="one">%d öğe</item>
+        <item quantity="other">%d öğe</item>
+    </plurals>
+    <string name="settings_categories">Kategoriler</string>
+    <string name="settings_categories_help">Otomatik algılama yanlış olduğunda her kategorinin nasıl gösterileceğini seçin veya kategoriyi gizleyin.</string>
+    <string name="settings_categories_empty">Burada kategori yok</string>
 </resources>

@@ -53,6 +53,7 @@ fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewMod
         composable<GuideRoute> { Placeholder() }
         composable<SearchRoute> { Placeholder() }
         composable<SettingsRoute> { Placeholder() }
+        composable<CategorySettingsRoute> { pm.koc.poptv.ui.settings.CategorySettingsScreen() }
     }
 }
 

@@ -52,4 +52,21 @@
     <string name="error_invalid_guide">The program guide could not be read.</string>
     <string name="error_storage">Could not save data on the device. Free up some space and try again.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
+
+    <!-- Content types / categories -->
+    <string name="type_live">Live</string>
+    <string name="type_movie">Movies</string>
+    <string name="type_series">Shows</string>
+    <string name="type_hidden">Hidden</string>
+    <string name="type_auto">Automatic (%1$s)</string>
+    <string name="filter_all">All</string>
+    <string name="filter_changed">Changed</string>
+    <string name="category_uncategorized">Uncategorized</string>
+    <plurals name="items_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <string name="settings_categories">Categories</string>
+    <string name="settings_categories_help">Choose how each playlist category is shown when the automatic detection gets it wrong, or hide it.</string>
+    <string name="settings_categories_empty">No categories here</string>
 </resources>

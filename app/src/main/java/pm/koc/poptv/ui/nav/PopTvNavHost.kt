@@ -3,6 +3,11 @@ package pm.koc.poptv.ui.nav
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import pm.koc.poptv.ui.MainViewModel
+import pm.koc.poptv.ui.login.LoginScreen
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -15,9 +20,23 @@ import pm.koc.poptv.R
 import pm.koc.poptv.ui.home.HomeScreen
 
 @Composable
-fun PopTvNavHost() {
+fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewModel()) {
+    val start by mainViewModel.start.collectAsStateWithLifecycle()
+    if (start == MainViewModel.Start.LOADING) {
+        Box(Modifier.fillMaxSize())
+        return
+    }
     val nav = rememberNavController()
-    NavHost(navController = nav, startDestination = HomeRoute) {
+    val startDestination: Any = if (start == MainViewModel.Start.HOME) HomeRoute else LoginRoute
+    NavHost(navController = nav, startDestination = startDestination) {
+        composable<LoginRoute> {
+            LoginScreen(
+                prefillUrl = prefillUrl,
+                onLoggedIn = {
+                    nav.navigate(HomeRoute) { popUpTo(LoginRoute) { inclusive = true } }
+                },
+            )
+        }
         composable<HomeRoute> {
             HomeScreen(
                 onOpenLive = { nav.navigate(LiveRoute()) },

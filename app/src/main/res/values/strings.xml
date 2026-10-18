@@ -20,4 +20,36 @@
     <!-- Exit -->
     <string name="exit_title">Exit PopTV?</string>
     <string name="exit_confirm">Exit</string>
+
+    <!-- Login / import -->
+    <string name="login_title">Welcome to PopTV</string>
+    <string name="login_subtitle">Enter your M3U playlist link. It already contains your username and password, so nothing else is needed.</string>
+    <string name="login_url_label">Playlist URL</string>
+    <string name="login_url_hint">http://provider.example:8080/get.php?username=…</string>
+    <string name="login_button">Sign in</string>
+    <string name="login_tip">Press OK on the field to type. Typing a long link with the remote is slow; see the README for sending it from a computer with adb.</string>
+    <string name="import_connecting">Connecting…</string>
+    <string name="import_downloading">Downloading playlist…</string>
+    <string name="import_saving">Organizing your library…</string>
+    <string name="import_bytes">%1$s downloaded</string>
+    <string name="import_bytes_of">%1$s of %2$s</string>
+    <plurals name="import_entries">
+        <item quantity="one">%d entry</item>
+        <item quantity="other">%d entries</item>
+    </plurals>
+
+    <!-- Errors -->
+    <string name="error_invalid_url">That doesn\'t look like a valid http(s) link. Check the address and try again.</string>
+    <string name="error_unauthorized">The provider rejected the credentials (HTTP %1$d). Your subscription may have expired or the username/password in the link is wrong.</string>
+    <string name="error_not_found">The playlist was not found on the server (HTTP 404). Check the link.</string>
+    <string name="error_http">The server returned an error (HTTP %1$d). Try again later.</string>
+    <string name="error_no_host">The server could not be found. Check the link and your internet connection.</string>
+    <string name="error_timeout">The server took too long to respond. Try again.</string>
+    <string name="error_ssl">A secure connection could not be established with the server.</string>
+    <string name="error_network">Network error. Check your internet connection and try again.</string>
+    <string name="error_empty_playlist">The playlist is empty. The provider returned no channels or videos.</string>
+    <string name="error_invalid_playlist">The server did not return a valid M3U playlist.</string>
+    <string name="error_invalid_guide">The program guide could not be read.</string>
+    <string name="error_storage">Could not save data on the device. Free up some space and try again.</string>
+    <string name="error_unknown">Something went wrong. Please try again.</string>
 </resources>

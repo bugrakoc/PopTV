@@ -18,4 +18,36 @@
     <!-- Exit -->
     <string name="exit_title">PopTV\'den çıkılsın mı?</string>
     <string name="exit_confirm">Çık</string>
+
+    <!-- Login / import -->
+    <string name="login_title">PopTV\'ye hoş geldiniz</string>
+    <string name="login_subtitle">M3U oynatma listesi bağlantınızı girin. Bağlantı kullanıcı adınızı ve şifrenizi zaten içerir, başka bir şey gerekmez.</string>
+    <string name="login_url_label">Oynatma listesi adresi</string>
+    <string name="login_url_hint">http://saglayici.example:8080/get.php?username=…</string>
+    <string name="login_button">Giriş yap</string>
+    <string name="login_tip">Yazmak için alanda Tamam\'a basın. Uzun bir bağlantıyı kumandayla yazmak yavaştır; bilgisayardan adb ile göndermek için README dosyasına bakın.</string>
+    <string name="import_connecting">Bağlanıyor…</string>
+    <string name="import_downloading">Oynatma listesi indiriliyor…</string>
+    <string name="import_saving">Kitaplığınız düzenleniyor…</string>
+    <string name="import_bytes">%1$s indirildi</string>
+    <string name="import_bytes_of">%1$s / %2$s</string>
+    <plurals name="import_entries">
+        <item quantity="one">%d kayıt</item>
+        <item quantity="other">%d kayıt</item>
+    </plurals>
+
+    <!-- Errors -->
+    <string name="error_invalid_url">Bu geçerli bir http(s) bağlantısı gibi görünmüyor. Adresi kontrol edip tekrar deneyin.</string>
+    <string name="error_unauthorized">Sağlayıcı kimlik bilgilerini reddetti (HTTP %1$d). Aboneliğiniz sona ermiş ya da bağlantıdaki kullanıcı adı/şifre yanlış olabilir.</string>
+    <string name="error_not_found">Oynatma listesi sunucuda bulunamadı (HTTP 404). Bağlantıyı kontrol edin.</string>
+    <string name="error_http">Sunucu bir hata döndürdü (HTTP %1$d). Daha sonra tekrar deneyin.</string>
+    <string name="error_no_host">Sunucu bulunamadı. Bağlantıyı ve internet bağlantınızı kontrol edin.</string>
+    <string name="error_timeout">Sunucu çok geç yanıt verdi. Tekrar deneyin.</string>
+    <string name="error_ssl">Sunucuyla güvenli bağlantı kurulamadı.</string>
+    <string name="error_network">Ağ hatası. İnternet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="error_empty_playlist">Oynatma listesi boş. Sağlayıcı hiç kanal veya video döndürmedi.</string>
+    <string name="error_invalid_playlist">Sunucu geçerli bir M3U oynatma listesi döndürmedi.</string>
+    <string name="error_invalid_guide">Yayın akışı okunamadı.</string>
+    <string name="error_storage">Veriler cihaza kaydedilemedi. Biraz yer açıp tekrar deneyin.</string>
+    <string name="error_unknown">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
 </resources>

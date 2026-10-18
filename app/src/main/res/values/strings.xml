@@ -154,4 +154,47 @@
     <string name="episode_code">S%1$02dE%2$02d</string>
     <string name="epg_no_guide_for_channel">No program guide for this channel</string>
     <string name="epg_no_info">No program information</string>
+
+    <!-- Movies / Shows / details -->
+    <string name="sort">Sort</string>
+    <string name="sort_playlist">Playlist order</string>
+    <string name="sort_name">Name (A–Z)</string>
+    <string name="sort_newest">Recently added</string>
+    <string name="sort_year">Release year</string>
+    <string name="vod_empty">Nothing here</string>
+    <string name="season_n">Season %1$d</string>
+    <string name="episode_short">E%1$02d</string>
+    <plurals name="episodes_count">
+        <item quantity="one">%d episode</item>
+        <item quantity="other">%d episodes</item>
+    </plurals>
+    <plurals name="seasons_count">
+        <item quantity="one">%d season</item>
+        <item quantity="other">%d seasons</item>
+    </plurals>
+    <string name="detail_cast">Cast: %1$s</string>
+    <string name="detail_resume_at">Resume from %1$s</string>
+    <string name="detail_start_over">Start over</string>
+    <string name="detail_play_episode">Play %1$s</string>
+    <string name="detail_add_favorite">Add to favorites</string>
+    <string name="detail_remove_favorite">Remove from favorites</string>
+    <string name="detail_mark_watched">Mark as watched</string>
+    <string name="detail_mark_unwatched">Mark as unwatched</string>
+    <string name="detail_season_watched">Mark season as watched</string>
+    <string name="detail_season_unwatched">Mark season as unwatched</string>
+    <string name="detail_watched">Watched</string>
+
+    <!-- Home -->
+    <string name="home_continue_watching">Continue watching</string>
+    <string name="home_favorite_channels">Favorite channels</string>
+    <string name="home_recent_channels">Recently watched channels</string>
+    <string name="home_favorite_movies">Favorite movies</string>
+    <string name="home_favorite_shows">Favorite shows</string>
+    <string name="home_next_episode">Next episode</string>
+    <string name="home_go_to_show">Go to show</string>
+    <string name="home_remove_from_continue">Remove from Continue watching</string>
+    <string name="home_empty_hint">Start watching something. Your favorites, recently watched channels and unfinished videos will appear here.</string>
+    <string name="home_updating_playlist">Updating playlist…</string>
+    <string name="home_updating_guide">Updating program guide…</string>
+    <string name="epg_unavailable_notice">No program guide was found for this playlist. Everything else works normally; you can add a guide URL in Settings › Program guide.</string>
 </resources>

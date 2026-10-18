@@ -152,4 +152,47 @@
     <string name="episode_code">S%1$02dB%2$02d</string>
     <string name="epg_no_guide_for_channel">Bu kanal için yayın akışı yok</string>
     <string name="epg_no_info">Program bilgisi yok</string>
+
+    <!-- Movies / Shows / details -->
+    <string name="sort">Sırala</string>
+    <string name="sort_playlist">Liste sırası</string>
+    <string name="sort_name">Ad (A–Z)</string>
+    <string name="sort_newest">Son eklenenler</string>
+    <string name="sort_year">Yapım yılı</string>
+    <string name="vod_empty">Burada bir şey yok</string>
+    <string name="season_n">%1$d. Sezon</string>
+    <string name="episode_short">B%1$02d</string>
+    <plurals name="episodes_count">
+        <item quantity="one">%d bölüm</item>
+        <item quantity="other">%d bölüm</item>
+    </plurals>
+    <plurals name="seasons_count">
+        <item quantity="one">%d sezon</item>
+        <item quantity="other">%d sezon</item>
+    </plurals>
+    <string name="detail_cast">Oyuncular: %1$s</string>
+    <string name="detail_resume_at">%1$s konumundan devam et</string>
+    <string name="detail_start_over">Baştan başlat</string>
+    <string name="detail_play_episode">%1$s oynat</string>
+    <string name="detail_add_favorite">Favorilere ekle</string>
+    <string name="detail_remove_favorite">Favorilerden çıkar</string>
+    <string name="detail_mark_watched">İzlendi olarak işaretle</string>
+    <string name="detail_mark_unwatched">İzlenmedi olarak işaretle</string>
+    <string name="detail_season_watched">Sezonu izlendi olarak işaretle</string>
+    <string name="detail_season_unwatched">Sezonu izlenmedi olarak işaretle</string>
+    <string name="detail_watched">İzlendi</string>
+
+    <!-- Home -->
+    <string name="home_continue_watching">İzlemeye devam et</string>
+    <string name="home_favorite_channels">Favori kanallar</string>
+    <string name="home_recent_channels">Son izlenen kanallar</string>
+    <string name="home_favorite_movies">Favori filmler</string>
+    <string name="home_favorite_shows">Favori diziler</string>
+    <string name="home_next_episode">Sonraki bölüm</string>
+    <string name="home_go_to_show">Diziye git</string>
+    <string name="home_remove_from_continue">İzlemeye devam et listesinden kaldır</string>
+    <string name="home_empty_hint">Bir şeyler izlemeye başlayın. Favorileriniz, son izlediğiniz kanallar ve yarım kalan videolar burada görünecek.</string>
+    <string name="home_updating_playlist">Oynatma listesi güncelleniyor…</string>
+    <string name="home_updating_guide">Yayın akışı güncelleniyor…</string>
+    <string name="epg_unavailable_notice">Bu oynatma listesi için yayın akışı bulunamadı. Diğer her şey normal çalışır; Ayarlar › Yayın akışı bölümünden bir akış adresi ekleyebilirsiniz.</string>
 </resources>

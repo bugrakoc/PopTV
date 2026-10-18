@@ -7,7 +7,11 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pm.koc.poptv.ui.MainViewModel
+import pm.koc.poptv.domain.ContentType
 import pm.koc.poptv.ui.live.LiveTvScreen
+import pm.koc.poptv.ui.vod.MovieDetailScreen
+import pm.koc.poptv.ui.vod.ShowDetailScreen
+import pm.koc.poptv.ui.vod.VodBrowseScreen
 import pm.koc.poptv.ui.login.LoginScreen
 import pm.koc.poptv.ui.player.PlayerScreen
 import androidx.compose.ui.Alignment
@@ -47,6 +51,9 @@ fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewMod
                 onOpenGuide = { nav.navigate(GuideRoute) },
                 onOpenSearch = { nav.navigate(SearchRoute) },
                 onOpenSettings = { nav.navigate(SettingsRoute) },
+                onPlay = { key, context, startOver -> nav.navigate(PlayerRoute(key, context, startOver)) },
+                onOpenMovie = { nav.navigate(MovieDetailRoute(it)) },
+                onOpenShow = { nav.navigate(ShowDetailRoute(it)) },
             )
         }
         composable<LiveRoute> {
@@ -58,8 +65,28 @@ fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewMod
         composable<PlayerRoute> {
             PlayerScreen(onBack = { nav.popBackStack() })
         }
-        composable<MoviesRoute> { Placeholder() }
-        composable<ShowsRoute> { Placeholder() }
+        composable<MoviesRoute> {
+            VodBrowseScreen(
+                type = ContentType.MOVIE,
+                onOpenMovie = { nav.navigate(MovieDetailRoute(it)) },
+                onOpenShow = { nav.navigate(ShowDetailRoute(it)) },
+                onSearch = { nav.navigate(SearchRoute) },
+            )
+        }
+        composable<ShowsRoute> {
+            VodBrowseScreen(
+                type = ContentType.SERIES,
+                onOpenMovie = { nav.navigate(MovieDetailRoute(it)) },
+                onOpenShow = { nav.navigate(ShowDetailRoute(it)) },
+                onSearch = { nav.navigate(SearchRoute) },
+            )
+        }
+        composable<MovieDetailRoute> {
+            MovieDetailScreen(onPlay = { key, startOver -> nav.navigate(PlayerRoute(key, startOver = startOver)) })
+        }
+        composable<ShowDetailRoute> {
+            ShowDetailScreen(onPlay = { key, startOver -> nav.navigate(PlayerRoute(key, startOver = startOver)) })
+        }
         composable<GuideRoute> { Placeholder() }
         composable<SearchRoute> { Placeholder() }
         composable<SettingsRoute> { Placeholder() }

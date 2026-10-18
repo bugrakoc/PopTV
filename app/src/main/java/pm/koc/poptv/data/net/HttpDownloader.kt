@@ -43,9 +43,7 @@ class HttpDownloader @Inject constructor(private val client: OkHttpClient) {
                 }
                 val body = response.body
                 val total = body.contentLength()
-                body.byteStream().use { raw ->
-                    consume(CountingInputStream(raw) { onBytes(it, total) })
-                }
+                CountingInputStream(body.byteStream()) { onBytes(it, total) }.use { counted -> consume(counted) }
             }
         } catch (e: AppError) {
             throw e

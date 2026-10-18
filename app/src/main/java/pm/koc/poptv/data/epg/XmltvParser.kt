@@ -85,7 +85,10 @@ class XmltvParser(
                             if (p == null) {
                                 malformed++
                             } else {
-                                openEnded.remove(p.channelId)?.let { prev -> emit(prev, p.start) }
+                                openEnded.remove(p.channelId)?.let { prev ->
+                                    // Out-of-order input: fall back to the default duration instead of dropping.
+                                    emit(prev, if (p.start > prev.start) p.start else prev.start + DEFAULT_DURATION_MS)
+                                }
                                 if (p.end != null) emit(p, p.end) else openEnded[p.channelId] = p
                             }
                         }

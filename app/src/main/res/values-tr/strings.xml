@@ -195,4 +195,11 @@
     <string name="home_updating_playlist">Oynatma listesi güncelleniyor…</string>
     <string name="home_updating_guide">Yayın akışı güncelleniyor…</string>
     <string name="epg_unavailable_notice">Bu oynatma listesi için yayın akışı bulunamadı. Diğer her şey normal çalışır; Ayarlar › Yayın akışı bölümünden bir akış adresi ekleyebilirsiniz.</string>
+
+    <!-- Guide -->
+    <string name="guide_now">Şimdi</string>
+    <string name="guide_category">Kanal grubu</string>
+    <string name="guide_watch_channel">Kanalı izle</string>
+    <string name="guide_unavailable">Yayın akışı yok</string>
+    <string name="guide_unavailable_detail">Oynatma listeniz yayın akışı sağlamıyor. Ayarlar › Yayın akışı bölümünden bir XMLTV adresi girebilirsiniz.</string>
 </resources>

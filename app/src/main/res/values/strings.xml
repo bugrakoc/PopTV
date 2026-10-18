@@ -197,4 +197,11 @@
     <string name="home_updating_playlist">Updating playlist…</string>
     <string name="home_updating_guide">Updating program guide…</string>
     <string name="epg_unavailable_notice">No program guide was found for this playlist. Everything else works normally; you can add a guide URL in Settings › Program guide.</string>
+
+    <!-- Guide -->
+    <string name="guide_now">Now</string>
+    <string name="guide_category">Channel group</string>
+    <string name="guide_watch_channel">Watch channel</string>
+    <string name="guide_unavailable">No program guide available</string>
+    <string name="guide_unavailable_detail">Your playlist does not provide a guide. You can enter an XMLTV guide URL in Settings › Program guide.</string>
 </resources>

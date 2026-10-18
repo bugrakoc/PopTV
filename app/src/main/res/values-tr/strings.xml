@@ -1,0 +1,21 @@
+<resources>
+    <!-- Navigation -->
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_live">Canlı TV</string>
+    <string name="nav_movies">Filmler</string>
+    <string name="nav_shows">Diziler</string>
+    <string name="nav_guide">Yayın Akışı</string>
+    <string name="nav_search">Ara</string>
+    <string name="nav_settings">Ayarlar</string>
+
+    <!-- Common -->
+    <string name="action_ok">Tamam</string>
+    <string name="action_cancel">İptal</string>
+    <string name="action_retry">Tekrar dene</string>
+    <string name="action_close">Kapat</string>
+    <string name="coming_soon">Yakında</string>
+
+    <!-- Exit -->
+    <string name="exit_title">PopTV\'den çıkılsın mı?</string>
+    <string name="exit_confirm">Çık</string>
+</resources>

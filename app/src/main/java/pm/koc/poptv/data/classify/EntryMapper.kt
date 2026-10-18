@@ -63,7 +63,7 @@ class EntryMapper(
             season = episode?.season,
             episode = episode?.episode,
             year = episode?.year ?: cleaned.year,
-            epgNameKey = EpgMatcher.nameKey(entry.tvgName ?: entry.title),
+            epgNameKey = entry.tvgName?.let(EpgMatcher::nameKey) ?: EpgMatcher.nameKey(cleaned, entry.title),
             epgChannelId = null,
             generation = generation,
         )

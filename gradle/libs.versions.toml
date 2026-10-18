@@ -22,7 +22,7 @@ serialization = "1.11.0"
 materialIcons = "1.7.8"
 junit = "4.13.2"
 truth = "1.4.5"
-kxml2 = "2.2.2"
+kxml2 = "2.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

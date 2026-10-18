@@ -1,7 +1,7 @@
 package pm.koc.poptv.player
 
 import android.content.Context
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.annotation.OptIn
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
@@ -127,7 +127,7 @@ class PlayerFactory @Inject constructor(
                     }
                     setSubtitleConfigurations(
                         listOf(
-                            MediaItem.SubtitleConfiguration.Builder(Uri.parse(sub))
+                            MediaItem.SubtitleConfiguration.Builder(sub.toUri())
                                 .setMimeType(subMime)
                                 .setSelectionFlags(0)
                                 .build(),

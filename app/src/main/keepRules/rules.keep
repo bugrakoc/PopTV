@@ -1,12 +1,13 @@
-# Add project specific R8 rules here.
-# AGP will combine all keep rule files in src/main/keepRules to pass to R8
-#
-# For more details, see
-#   https://d.android.com/r/tools/r8/keep-rules
+# PopTV R8 rules. Libraries (Room, Hilt, Media3, OkHttp, Coil, kotlinx.serialization, WorkManager)
+# ship their own consumer rules; only app-specific needs are listed here.
 
-# If your project uses WebView with JS, uncomment the following
-# and specify the fully qualified class name to the JavaScript interface
-# class:
-#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
-#   public *;
-#}
+# Enum names are persisted in DataStore (settings) and must stay stable across releases.
+-keepclassmembers enum pm.koc.poptv.** {
+    public static final ** *;
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
+
+# Readable stack traces in crash reports / logcat.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

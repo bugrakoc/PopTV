@@ -87,7 +87,7 @@ class PlaylistRepository @Inject constructor(
     private suspend fun runImport(url: String, isLogin: Boolean, onProgress: (ImportProgress) -> Unit): Result<Int> =
         mutex.withLock {
             try {
-                val summary = importer.import(url, onProgress)
+                val summary = importer.import(url, guardAgainstShrink = !isLogin, onProgress = onProgress)
                 if (isLogin) {
                     settings.setPlaylistUrl(url)
                     settings.setEpgNoticeShown(false)

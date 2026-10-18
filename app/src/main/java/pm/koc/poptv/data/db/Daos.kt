@@ -277,6 +277,9 @@ interface HistoryDao {
     @Query("SELECT s.* FROM watch_history h JOIN streams s ON s.`key` = h.`key` WHERE h.kind = 'CHANNEL' AND s.hidden = 0 ORDER BY h.watchedAt DESC LIMIT :limit")
     fun observeRecentChannels(limit: Int): Flow<List<StreamEntity>>
 
+    @Query("SELECT s.* FROM watch_history h JOIN streams s ON s.`key` = h.`key` WHERE h.kind = 'CHANNEL' AND s.hidden = 0 ORDER BY h.watchedAt DESC LIMIT :limit")
+    suspend fun recentChannels(limit: Int): List<StreamEntity>
+
     @Query("DELETE FROM watch_history WHERE kind = :kind AND `key` NOT IN (SELECT `key` FROM watch_history WHERE kind = :kind ORDER BY watchedAt DESC LIMIT :keep)")
     suspend fun trim(kind: ItemKind, keep: Int)
 

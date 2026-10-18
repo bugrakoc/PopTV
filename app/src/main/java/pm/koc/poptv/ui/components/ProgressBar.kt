@@ -21,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.roundToInt
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 
@@ -60,7 +62,7 @@ fun ProgressBar(
                 Modifier
                     .fillMaxHeight()
                     .width(maxWidth * 0.3f)
-                    .offset(x = maxWidth * fraction)
+                    .offset { IntOffset((constraints.maxWidth * fraction).roundToInt(), 0) }
                     .background(color, shape),
             )
         }

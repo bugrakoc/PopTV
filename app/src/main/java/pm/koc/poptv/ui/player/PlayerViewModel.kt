@@ -112,6 +112,7 @@ class PlayerViewModel @Inject constructor(
     private var epgJob: Job? = null
 
     init {
+        library.resetRecentSnapshot()
         viewModelScope.launch {
             val s = settingsRepository.current()
             _settings.value = s
@@ -157,7 +158,7 @@ class PlayerViewModel @Inject constructor(
     override fun onCleared() {
         val p = _player.value
         val stream = current
-        if (p != null && stream != null && stream.type != ContentType.LIVE) {
+        if (p != null && stream != null && stream.type != ContentType.LIVE && p.currentMediaItem?.mediaId == stream.url) {
             val pos = p.currentPosition
             val dur = p.duration.takeIf { it != C.TIME_UNSET } ?: 0
             appScope.launch { playback.save(stream, pos, dur) }
@@ -168,7 +169,6 @@ class PlayerViewModel @Inject constructor(
         p?.removeAnalyticsListener(analytics)
         p?.release()
         _player.value = null
-        super.onCleared()
     }
 
     /** Activity went to the background: save, pause VOD, stop live streams (frees the provider connection). */
@@ -387,7 +387,9 @@ class PlayerViewModel @Inject constructor(
         }
 
         val stream = current ?: return
-        if (stream.type != ContentType.LIVE && p.isPlaying && now - lastSaveAt >= ResumePolicy.SAVE_INTERVAL_MS) {
+        if (stream.type != ContentType.LIVE && p.isPlaying && p.currentMediaItem?.mediaId == stream.url &&
+            now - lastSaveAt >= ResumePolicy.SAVE_INTERVAL_MS
+        ) {
             lastSaveAt = now
             viewModelScope.launch { playback.save(stream, position, duration) }
         }
@@ -455,6 +457,8 @@ class PlayerViewModel @Inject constructor(
         val stream = current ?: return
         if (stream.type == ContentType.LIVE) return
         val p = _player.value ?: return
+        // While switching items the player may still report the previous item's position.
+        if (p.currentMediaItem?.mediaId != stream.url) return
         val pos = p.currentPosition
         val dur = p.duration.takeIf { it != C.TIME_UNSET } ?: 0
         lastSaveAt = System.currentTimeMillis()
@@ -543,6 +547,7 @@ class PlayerViewModel @Inject constructor(
 
     fun playChannel(stream: StreamEntity, context: String?) {
         zapJob?.cancel()
+        library.resetRecentSnapshot()
         _ui.update { it.copy(zapContext = context) }
         play(stream)
     }

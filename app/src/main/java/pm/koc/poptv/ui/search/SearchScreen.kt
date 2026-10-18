@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -44,7 +45,7 @@ import pm.koc.poptv.ui.components.EmptyState
 import pm.koc.poptv.ui.components.PosterCard
 import pm.koc.poptv.ui.components.ScreenScaffold
 import pm.koc.poptv.ui.components.TvTextField
-import java.util.Locale
+import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 fun SearchScreen(
@@ -57,6 +58,7 @@ fun SearchScreen(
     val results by viewModel.results.collectAsStateWithLifecycle()
     val original by viewModel.showOriginalNames.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val locale = LocalConfiguration.current.locales[0]
 
     val voice = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -65,7 +67,7 @@ fun SearchScreen(
     }
     val voiceIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
         putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault().toLanguageTag())
+        putExtra(RecognizerIntent.EXTRA_LANGUAGE, locale.toLanguageTag())
     }
     val voiceAvailable = remember(context) { voiceIntent.resolveActivity(context.packageManager) != null }
 
@@ -97,7 +99,7 @@ fun SearchScreen(
         val r = results
         when {
             r == null -> EmptyState(
-                if (query.isBlank()) stringResource(R.string.search_prompt) else stringResource(R.string.search_too_short, SearchQuery.MIN_LENGTH),
+                if (query.isBlank()) stringResource(R.string.search_prompt) else pluralStringResource(R.plurals.search_too_short, SearchQuery.MIN_LENGTH, SearchQuery.MIN_LENGTH),
             )
             r.isEmpty -> EmptyState(stringResource(R.string.search_no_results, query.trim()))
             else -> LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(18.dp)) {

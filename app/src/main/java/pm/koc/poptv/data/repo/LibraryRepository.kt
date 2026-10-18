@@ -104,7 +104,8 @@ class LibraryRepository @Inject constructor(
         val dao = db.streamDao()
         return when (context) {
             LiveContext.FAVORITES -> neighbourIn(db.favoriteDao().channels(), current, forward)
-            LiveContext.RECENT -> null
+            // History order changes on every zap, so zapping inside "recent" walks a snapshot of it.
+            LiveContext.RECENT -> neighbourIn(recentSnapshot ?: db.historyDao().recentChannels(50).also { recentSnapshot = it }, current, forward)
             else -> {
                 val group = LiveContext.groupOrNull(context)
                 if (forward) {
@@ -114,6 +115,13 @@ class LibraryRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    @Volatile private var recentSnapshot: List<StreamEntity>? = null
+
+    /** Called when the user explicitly picks a channel, so the next "recent" zap uses fresh history. */
+    fun resetRecentSnapshot() {
+        recentSnapshot = null
     }
 
     private fun neighbourIn(list: List<StreamEntity>, current: StreamEntity, forward: Boolean): StreamEntity? {
@@ -128,6 +136,7 @@ class LibraryRepository @Inject constructor(
 
     suspend fun liveChannels(context: String?, offset: Int, limit: Int): List<StreamEntity> = when (context) {
         LiveContext.FAVORITES -> db.favoriteDao().channels().drop(offset).take(limit)
+        LiveContext.RECENT -> db.historyDao().recentChannels(50).drop(offset).take(limit)
         else -> db.streamDao().liveChannels(LiveContext.groupOrNull(context), limit, offset)
     }
 

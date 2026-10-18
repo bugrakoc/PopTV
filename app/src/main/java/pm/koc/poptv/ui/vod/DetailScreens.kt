@@ -75,7 +75,7 @@ import pm.koc.poptv.ui.components.safeRequestFocus
 import pm.koc.poptv.ui.live.listItemColors
 import pm.koc.poptv.ui.theme.Background
 import pm.koc.poptv.ui.theme.SuccessGreen
-import java.util.Locale
+import androidx.compose.ui.platform.LocalConfiguration
 
 /** Backdrop + poster + text block shared by movie and show details. */
 @Composable
@@ -121,7 +121,7 @@ private fun DetailHeader(
                 Spacer(Modifier.height(8.dp))
                 val meta = listOfNotNull(
                     (metadata?.year ?: year)?.toString(),
-                    metadata?.rating?.let { String.format(Locale.getDefault(), "★ %.1f", it) },
+                    metadata?.rating?.let { String.format(LocalConfiguration.current.locales[0], "★ %.1f", it) },
                     metadata?.genres?.take(3)?.joinToString(", ")?.takeIf { it.isNotBlank() },
                     extraLine,
                 ).joinToString("  ·  ")

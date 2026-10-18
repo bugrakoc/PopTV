@@ -16,10 +16,12 @@ object EpgMatcher {
     private val countrySuffix = Regex("""\.[a-z]{2,3}$""", RegexOption.IGNORE_CASE)
 
     /** Normalized name used for fallback matching. */
-    fun nameKey(name: String): String {
-        val cleaned = NameCleaner.clean(name).name
-        val key = TextNormalizer.compactKey(cleaned)
-        return key.ifEmpty { TextNormalizer.compactKey(name) }
+    fun nameKey(name: String): String = nameKey(NameCleaner.clean(name), name)
+
+    /** Same as [nameKey] for a name already run through [NameCleaner]. */
+    fun nameKey(cleaned: NameCleaner.Cleaned, original: String): String {
+        val key = TextNormalizer.compactKey(cleaned.name)
+        return key.ifEmpty { TextNormalizer.compactKey(original) }
     }
 
     /** Returns playlist channel key -> guide channel id. */

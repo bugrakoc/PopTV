@@ -1,3 +1,5 @@
+@file:androidx.annotation.OptIn(markerClass = [androidx.media3.common.util.UnstableApi::class])
+
 package pm.koc.poptv.ui.player
 
 import android.view.KeyEvent

@@ -51,6 +51,8 @@ object EpisodeParser {
     /** Same as [parse] for a title that was already run through [NameCleaner]. */
     fun parse(cleaned: NameCleaner.Cleaned): Episode? {
         val text = cleaned.name
+        // Every pattern needs a number; most channel and movie names can skip the regexes entirely.
+        if (text.none { it.isDigit() }) return null
         for (p in patterns) {
             val m = p.regex.find(text) ?: continue
             val season = if (p.seasonGroup == 0) 1 else m.groupValues[p.seasonGroup].toIntOrNull() ?: continue

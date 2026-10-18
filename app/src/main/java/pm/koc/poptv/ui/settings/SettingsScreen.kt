@@ -17,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,7 +43,7 @@ import pm.koc.poptv.ui.components.ConfirmDialog
 import pm.koc.poptv.ui.components.ScreenScaffold
 import pm.koc.poptv.ui.components.TextInputDialog
 import pm.koc.poptv.ui.components.localizedMessage
-import pm.koc.poptv.ui.components.safeRequestFocus
+import pm.koc.poptv.ui.components.requestFocusWithRetry
 import pm.koc.poptv.ui.player.decoderModeLabel
 
 private enum class SettingDialog {
@@ -68,16 +67,11 @@ fun SettingsScreen(
     var dialog by rememberSaveable { mutableStateOf<SettingDialog?>(null) }
     var manualEpgInitial by remember { mutableStateOf("") }
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val firstFocus = remember { FocusRequester() }
 
     LaunchedEffect(Unit) { viewModel.loggedOut.collect { onLoggedOut() } }
-    LaunchedEffect(Unit) { firstFocus.safeRequestFocus() }
+    LaunchedEffect(Unit) { firstFocus.requestFocusWithRetry() }
 
-    fun hours(h: Int): String = if (h <= 0) context.getString(R.string.settings_off) else
-        context.resources.getQuantityString(R.plurals.every_hours, h, h)
-    fun ago(t: Long): String = if (t <= 0) context.getString(R.string.settings_never) else
-        DateUtils.getRelativeTimeSpanString(t, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
 
     ScreenScaffold(title = stringResource(R.string.nav_settings)) {
         LazyColumn(state = rememberLazyListState(), contentPadding = PaddingValues(bottom = 32.dp)) {
@@ -108,8 +102,9 @@ fun SettingsScreen(
             header(R.string.settings_section_epg)
             item {
                 val epgValue = when (val e = epgState) {
-                    is EpgRefreshState.Running -> stringResource(R.string.settings_epg_loading, e.programmes)
-                    is EpgRefreshState.Done -> stringResource(R.string.settings_epg_done, e.programmes, e.matchedChannels)
+                    is EpgRefreshState.Running -> pluralStringResource(R.plurals.settings_epg_loading, e.programmes, e.programmes)
+                    is EpgRefreshState.Done -> pluralStringResource(R.plurals.settings_epg_done, e.programmes, e.programmes) + " · " +
+                        pluralStringResource(R.plurals.settings_epg_matched, e.matchedChannels, e.matchedChannels)
                     EpgRefreshState.Unavailable -> stringResource(R.string.guide_unavailable)
                     EpgRefreshState.Idle -> if (state.epgStatus == EpgStatus.UNAVAILABLE) stringResource(R.string.guide_unavailable)
                     else stringResource(R.string.settings_last_refresh_short, ago(state.lastEpgRefresh))
@@ -258,6 +253,15 @@ fun SettingsScreen(
         null -> Unit
     }
 }
+
+@Composable
+private fun hours(h: Int): String =
+    if (h <= 0) stringResource(R.string.settings_off) else pluralStringResource(R.plurals.every_hours, h, h)
+
+@Composable
+private fun ago(t: Long): String =
+    if (t <= 0) stringResource(R.string.settings_never)
+    else DateUtils.getRelativeTimeSpanString(t, System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS).toString()
 
 private fun LazyListScope.header(res: Int) {
     item(key = "h$res") {

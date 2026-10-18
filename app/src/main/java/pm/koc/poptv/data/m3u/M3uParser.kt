@@ -73,7 +73,7 @@ class M3uParser(
             lines++
             var line = raw
             if (first) {
-                line = line.removePrefix("﻿")
+                line = line.removePrefix("\uFEFF")
             }
             line = line.trim()
             if (line.isEmpty()) return

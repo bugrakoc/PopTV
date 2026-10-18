@@ -37,10 +37,10 @@ Everything that can be tested on the JVM lives in `core/`, `domain/`, `data/m3u`
 
 ## Dependencies (latest stable as of 2026-10, checked against Maven Central / Google Maven)
 
-AGP 9.4.1, Kotlin 2.4.21, KSP 2.3.12, Compose BOM 2026.09.00, tv-material 1.1.0, Navigation Compose 2.10.2,
-Lifecycle 2.11.0, Room 2.8.5, Paging 3.5.3, WorkManager 2.12.0, DataStore 1.2.1, Media3 1.11.1,
-Hilt 2.60.1 (+ androidx.hilt 1.4.0), OkHttp 5.5.0, Coil 3.6.3, kotlinx-serialization 1.11.0,
-coroutines 1.11.0. Tests: JUnit 4.13.2, Truth 1.4.5, kxml2 2.2.2, coroutines-test.
+Gradle 9.8.1, AGP 9.4.1, Kotlin 2.4.21, KSP 2.3.12, Compose BOM 2026.09.00, tv-material 1.1.0,
+Navigation Compose 2.10.2, Lifecycle 2.11.0, Room 2.8.5, Paging 3.5.3, WorkManager 2.12.0, DataStore 1.2.1,
+Media3 1.11.1, Hilt 2.60.1 (+ androidx.hilt 1.4.0), OkHttp 5.5.0, Coil 3.6.3, kotlinx-serialization 1.11.0,
+coroutines 1.11.0. Tests: JUnit 4.13.2, Truth 1.4.5, kxml2 2.3.0, coroutines-test, MockWebServer 5.5.0.
 
 ## Key decisions
 
@@ -76,6 +76,32 @@ coroutines 1.11.0. Tests: JUnit 4.13.2, Truth 1.4.5, kxml2 2.2.2, coroutines-tes
 - **Multiple playlists**: not implemented (single playlist requirement); the schema leaves room for it.
 - **Debug convenience**: the login screen can be pre-filled via
   `adb shell am start -n pm.koc.poptv/.MainActivity --es playlist_url "<url>"` (pre-fill only, never auto-login).
+
+## Decisions made during implementation
+
+- **Stable keys are type-independent** (not "tvg-id for live, URL for VOD"), so overriding a category's type
+  never orphans favorites or resume positions.
+- **Shrink guard**: background/manual refreshes that return < 20% of the previous entry count (with ≥ 500
+  before) are rejected. This catches typical "account expired" playlists. Logging in again bypasses it.
+- **Guide source order follows the spec** (header → Xtream → manual). The manual URL is therefore a fallback,
+  not an override; this is documented in the README. Flipping it is a one-line change in `EpgSources`.
+- **Guide replace is transactional**: the XMLTV file goes to a temp file first, then programmes are replaced
+  in one transaction, so a failed download or empty file keeps the old guide.
+- **Decoder errors** retry once with software-preferred decoders for that stream only. Unrecognized containers
+  on extension-less URLs retry once as HLS.
+- **Zapping is debounced (350 ms)**: the banner updates immediately and the stream tunes when the user stops
+  pressing. This avoids hammering providers with one-connection limits.
+- **Channel direction**: D-pad down = next channel by default, with a Settings toggle to invert. Channel ±
+  keys always follow channel order.
+- **Search** uses folded `searchName` columns and an in-order multi-word LIKE pattern ("kanal d" →
+  `%kanal%d%`) instead of FTS, so substring matches work.
+- **TMDB** was implemented with the detail screens (milestone 5) rather than milestone 7, because those
+  screens are designed around it. It accepts a v3 key or a v4 token, and misses are cached for 3 days.
+- **Release builds** are R8-optimized for all packages (the template limited optimization to libraries).
+  Enum names are kept because DataStore persists them. They are signed with the debug key for sideloading.
+- **Backups are disabled**: the Keystore key cannot be restored on another device anyway.
+- **User CAs** are trusted only in debug builds (`debug-overrides`). Cleartext HTTP is allowed everywhere
+  because providers need it.
 
 ## Milestones
 

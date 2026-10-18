@@ -1,6 +1,5 @@
 <resources>
     <!-- Navigation -->
-    <string name="nav_home">Ana Sayfa</string>
     <string name="nav_live">Canlı TV</string>
     <string name="nav_movies">Filmler</string>
     <string name="nav_shows">Diziler</string>
@@ -13,7 +12,6 @@
     <string name="action_cancel">İptal</string>
     <string name="action_retry">Tekrar dene</string>
     <string name="action_close">Kapat</string>
-    <string name="coming_soon">Yakında</string>
 
     <!-- Exit -->
     <string name="exit_title">PopTV\'den çıkılsın mı?</string>
@@ -120,7 +118,6 @@
     <string name="player_track_unsupported">Desteklenmiyor</string>
     <string name="player_audio_mono">Mono</string>
     <string name="player_audio_stereo">Stereo</string>
-    <string name="player_audio_channels">%1$d kanal</string>
     <string name="player_speed">Hız</string>
     <string name="player_speed_normal">Normal</string>
     <string name="player_aspect">En-boy oranı</string>
@@ -207,7 +204,6 @@
     <string name="search_hint">Kanal, film, dizi…</string>
     <string name="search_voice">Sesli arama</string>
     <string name="search_prompt">Kanal, film ve dizi aramak için yazın</string>
-    <string name="search_too_short">En az %1$d karakter yazın</string>
     <string name="search_no_results">“%1$s” için sonuç yok</string>
     <string name="search_channels">Kanallar (%1$d)</string>
     <string name="search_movies">Filmler (%1$d)</string>
@@ -238,8 +234,6 @@
     <string name="settings_logout_confirm_title">Çıkış yapılsın mı?</string>
     <string name="settings_logout_confirm_message">Oynatma listesi, favoriler, izleme geçmişi, kaldığınız yerler, yayın akışı ve ayarlar bu cihazdan silinecek.</string>
     <string name="settings_refresh_epg">Yayın akışını şimdi yenile</string>
-    <string name="settings_epg_loading">Yükleniyor… %1$d program</string>
-    <string name="settings_epg_done">%1$d program, %2$d kanal eşleşti</string>
     <string name="settings_epg_url">Yayın akışı adresi (XMLTV)</string>
     <string name="settings_epg_url_set">Özel adres ayarlı</string>
     <string name="settings_epg_url_auto">Otomatik (listeden)</string>
@@ -290,4 +284,24 @@
     <string name="about_description">PopTV, kendi IPTV sağlayıcınızın M3U listelerini oynatır. Herhangi bir içerik sağlamaz.</string>
     <string name="about_tmdb_notice">Bu ürün TMDB API\'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.</string>
     <string name="about_licenses">Açık kaynak lisansları</string>
+    <plurals name="settings_epg_loading">
+        <item quantity="one">Yükleniyor… %d program</item>
+        <item quantity="other">Yükleniyor… %d program</item>
+    </plurals>
+    <plurals name="settings_epg_done">
+        <item quantity="one">%d program</item>
+        <item quantity="other">%d program</item>
+    </plurals>
+    <plurals name="settings_epg_matched">
+        <item quantity="one">%d kanal eşleşti</item>
+        <item quantity="other">%d kanal eşleşti</item>
+    </plurals>
+    <plurals name="search_too_short">
+        <item quantity="one">En az %d karakter yazın</item>
+        <item quantity="other">En az %d karakter yazın</item>
+    </plurals>
+    <plurals name="player_audio_channels">
+        <item quantity="one">%d kanal</item>
+        <item quantity="other">%d kanal</item>
+    </plurals>
 </resources>

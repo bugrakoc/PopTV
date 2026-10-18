@@ -436,6 +436,10 @@ fun PlayerScreen(
     }
 
     // ---- Dialogs ----
+    fun closeDialog() {
+        dialog = null
+        if (ui.isLive) overlay = Overlay.NONE
+    }
     when (dialog) {
         PlayerDialog.AUDIO -> {
             val choices = buildList<Choice<Int>> {
@@ -448,9 +452,9 @@ fun PlayerScreen(
                 selected = ui.audioTracks.indexOfFirst { it.selected }.takeIf { it >= 0 } ?: -1,
                 onSelect = { i ->
                     if (i < 0) viewModel.selectAutoAudio() else viewModel.selectTrack(ui.audioTracks[i])
-                    dialog = null
+                    closeDialog()
                 },
-                onDismiss = { dialog = null },
+                onDismiss = { closeDialog() },
             )
         }
         PlayerDialog.SUBTITLES -> {
@@ -464,9 +468,9 @@ fun PlayerScreen(
                 selected = if (ui.subtitlesOff) -1 else ui.textTracks.indexOfFirst { it.selected },
                 onSelect = { i ->
                     viewModel.selectTrack(if (i < 0) null else ui.textTracks[i])
-                    dialog = null
+                    closeDialog()
                 },
-                onDismiss = { dialog = null },
+                onDismiss = { closeDialog() },
             )
         }
         PlayerDialog.SPEED -> ChoiceDialog(
@@ -475,8 +479,8 @@ fun PlayerScreen(
                 Choice(it, if (it == 1f) stringResource(R.string.player_speed_normal) else "${it}×")
             },
             selected = ui.speed,
-            onSelect = { viewModel.setSpeed(it); dialog = null },
-            onDismiss = { dialog = null },
+            onSelect = { viewModel.setSpeed(it); closeDialog() },
+            onDismiss = { closeDialog() },
         )
         PlayerDialog.ASPECT -> ChoiceDialog(
             title = stringResource(R.string.player_aspect),
@@ -486,8 +490,8 @@ fun PlayerScreen(
                 Choice(ResizeMode.ZOOM, stringResource(R.string.player_aspect_zoom)),
             ),
             selected = ui.resizeMode,
-            onSelect = { viewModel.setResizeMode(it); dialog = null },
-            onDismiss = { dialog = null },
+            onSelect = { viewModel.setResizeMode(it); closeDialog() },
+            onDismiss = { closeDialog() },
         )
         null -> Unit
     }

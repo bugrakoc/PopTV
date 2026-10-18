@@ -1,6 +1,9 @@
+@file:androidx.annotation.OptIn(markerClass = [androidx.media3.common.util.UnstableApi::class])
+
 package pm.koc.poptv.ui.player
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.media3.common.C
 import androidx.media3.common.Format
@@ -67,7 +70,7 @@ fun channelLabel(channels: Int): String? = when {
     channels == 2 -> stringResource(R.string.player_audio_stereo)
     channels == 6 -> "5.1"
     channels == 8 -> "7.1"
-    else -> stringResource(R.string.player_audio_channels, channels)
+    else -> pluralStringResource(R.plurals.player_audio_channels, channels, channels)
 }
 
 private fun languageName(code: String?): String? {

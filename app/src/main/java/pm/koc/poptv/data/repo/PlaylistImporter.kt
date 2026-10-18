@@ -43,13 +43,22 @@ class PlaylistImporter @Inject constructor(
     private val indexer: LibraryIndexer,
 ) {
 
-    suspend fun import(url: String, onProgress: (ImportProgress) -> Unit): ImportSummary {
+    /**
+     * @param guardAgainstShrink for background refreshes: a playlist that suddenly has far fewer entries
+     *   (typical "account expired" / "max connections" responses) is rejected instead of replacing the library.
+     */
+    suspend fun import(
+        url: String,
+        guardAgainstShrink: Boolean = false,
+        onProgress: (ImportProgress) -> Unit,
+    ): ImportSummary {
         if (!UrlUtils.isValidHttpUrl(url)) throw AppError.InvalidUrl()
         Log.i(TAG, "Importing ${UrlUtils.redact(url)}")
         onProgress(ImportProgress(ImportProgress.Phase.CONNECTING))
 
         val streamDao = db.streamDao()
         val generation = streamDao.maxGeneration() + 1
+        val previousCount = streamDao.count()
         val overrides = db.overrideDao().all().associate { it.groupTitle to it.override }
         val mapper = EntryMapper(StableKeyGenerator(UrlUtils.credentials(url)), overrides, generation)
         var header: M3uHeader? = null
@@ -112,6 +121,12 @@ class PlaylistImporter @Inject constructor(
             throw if (stats.sawHeader) AppError.EmptyPlaylist() else AppError.InvalidPlaylist()
         }
 
+        if (guardAgainstShrink && previousCount >= SHRINK_MIN_PREVIOUS && stats.entries < previousCount / SHRINK_FACTOR) {
+            // Keep the existing library; rows from this import replaced identical keys only.
+            Log.w(TAG, "Refresh returned ${stats.entries} entries (had $previousCount); keeping the current library")
+            throw AppError.EmptyPlaylist()
+        }
+
         onProgress(ImportProgress(ImportProgress.Phase.SAVING, bytes, total, entries))
         val removed = streamDao.deleteOtherGenerations(generation)
         indexer.rebuildDerived()
@@ -126,5 +141,7 @@ class PlaylistImporter @Inject constructor(
     private companion object {
         const val TAG = "PlaylistImporter"
         const val BATCH_SIZE = 1000
+        const val SHRINK_MIN_PREVIOUS = 500
+        const val SHRINK_FACTOR = 5
     }
 }

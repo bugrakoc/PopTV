@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- "Library|License" entries shown on the About screen (proper names; not translated). -->
+    <string-array name="open_source_licenses" translatable="false">
+        <item>AndroidX (Compose, Compose for TV, Navigation, Lifecycle, Room, Paging, WorkManager, DataStore)|Apache License 2.0</item>
+        <item>AndroidX Media3 (ExoPlayer, HLS, DASH, Session, UI)|Apache License 2.0</item>
+        <item>Dagger / Hilt|Apache License 2.0</item>
+        <item>OkHttp / Okio|Apache License 2.0</item>
+        <item>Coil|Apache License 2.0</item>
+        <item>Kotlin, kotlinx.coroutines, kotlinx.serialization|Apache License 2.0</item>
+        <item>Material Icons|Apache License 2.0</item>
+    </string-array>
+</resources>

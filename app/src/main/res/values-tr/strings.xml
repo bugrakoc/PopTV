@@ -202,4 +202,92 @@
     <string name="guide_watch_channel">Kanalı izle</string>
     <string name="guide_unavailable">Yayın akışı yok</string>
     <string name="guide_unavailable_detail">Oynatma listeniz yayın akışı sağlamıyor. Ayarlar › Yayın akışı bölümünden bir XMLTV adresi girebilirsiniz.</string>
+
+    <!-- Search -->
+    <string name="search_hint">Kanal, film, dizi…</string>
+    <string name="search_voice">Sesli arama</string>
+    <string name="search_prompt">Kanal, film ve dizi aramak için yazın</string>
+    <string name="search_too_short">En az %1$d karakter yazın</string>
+    <string name="search_no_results">“%1$s” için sonuç yok</string>
+    <string name="search_channels">Kanallar (%1$d)</string>
+    <string name="search_movies">Filmler (%1$d)</string>
+    <string name="search_shows">Diziler (%1$d)</string>
+
+    <!-- Settings -->
+    <string name="action_save">Kaydet</string>
+    <string name="action_reset">Sıfırla</string>
+    <string name="action_remove">Kaldır</string>
+    <string name="settings_section_playlist">Oynatma listesi</string>
+    <string name="settings_section_epg">Yayın akışı</string>
+    <string name="settings_section_player">Oynatıcı</string>
+    <string name="settings_section_content">İçerik</string>
+    <string name="settings_section_metadata">Meta veriler</string>
+    <string name="settings_section_about">Hakkında</string>
+    <string name="settings_refresh_playlist">Oynatma listesini şimdi yenile</string>
+    <string name="settings_last_refresh">Son güncelleme %1$s · %2$s</string>
+    <string name="settings_last_refresh_short">Son güncelleme %1$s</string>
+    <string name="settings_never">hiç</string>
+    <string name="settings_off">Kapalı</string>
+    <plurals name="every_hours">
+        <item quantity="one">Her saat</item>
+        <item quantity="other">%d saatte bir</item>
+    </plurals>
+    <string name="settings_auto_refresh">Otomatik yenileme</string>
+    <string name="settings_logout">Çıkış yap / listeyi değiştir</string>
+    <string name="settings_logout_detail">Oynatma listesini ve tüm yerel verileri siler</string>
+    <string name="settings_logout_confirm_title">Çıkış yapılsın mı?</string>
+    <string name="settings_logout_confirm_message">Oynatma listesi, favoriler, izleme geçmişi, kaldığınız yerler, yayın akışı ve ayarlar bu cihazdan silinecek.</string>
+    <string name="settings_refresh_epg">Yayın akışını şimdi yenile</string>
+    <string name="settings_epg_loading">Yükleniyor… %1$d program</string>
+    <string name="settings_epg_done">%1$d program, %2$d kanal eşleşti</string>
+    <string name="settings_epg_url">Yayın akışı adresi (XMLTV)</string>
+    <string name="settings_epg_url_set">Özel adres ayarlı</string>
+    <string name="settings_epg_url_auto">Otomatik (listeden)</string>
+    <string name="settings_epg_url_help">İsteğe bağlı. Oynatma listesi çalışan bir yayın akışı sağlamadığında kullanılır. Düz .xml ve gzip ile sıkıştırılmış .xml.gz desteklenir. Kaldırmak için boş bırakın.</string>
+    <string name="settings_epg_offset">Yayın akışı saat farkı</string>
+    <string name="settings_epg_offset_none">Fark yok</string>
+    <string name="settings_epg_offset_hours">%1$s sa</string>
+    <string name="settings_epg_offset_minutes">%1$s dk</string>
+    <string name="settings_decoder">Kod çözücü</string>
+    <string name="decoder_hardware_detail">Önce donanım kod çözücüleri (H.264, HEVC, VP9, AV1); gerekirse otomatik olarak yazılıma geçer.</string>
+    <string name="decoder_software_detail">Önce yazılım kod çözücüleri. Görüntüde bozulma veya yeşil ekran olursa kullanın. 4K takılabilir.</string>
+    <string name="decoder_auto_detail">Platformun varsayılan sırası.</string>
+    <string name="settings_tunneling">Tünelli oynatma</string>
+    <string name="settings_tunneling_detail">Bazı televizyonlarda ses/görüntü senkronunu iyileştirebilir. Video başlamazsa kapatın.</string>
+    <string name="settings_buffer">Arabellek boyutu</string>
+    <string name="buffer_small">Küçük (daha hızlı başlangıç)</string>
+    <string name="buffer_normal">Normal</string>
+    <string name="buffer_large">Büyük (daha az kesinti)</string>
+    <string name="settings_user_agent">Kullanıcı aracısı (User-Agent)</string>
+    <string name="settings_user_agent_help">Bazı sağlayıcılar tanımadıkları oynatıcıları engeller. Varsayılan değer VLC olarak tanıtır.</string>
+    <string name="settings_subtitle_size">Altyazı boyutu</string>
+    <string name="size_small">Küçük</string>
+    <string name="size_normal">Normal</string>
+    <string name="size_large">Büyük</string>
+    <string name="size_xlarge">Çok büyük</string>
+    <string name="settings_subtitle_color">Altyazı rengi</string>
+    <string name="color_white">Beyaz</string>
+    <string name="color_yellow">Sarı</string>
+    <string name="settings_subtitle_background">Altyazı arka planı</string>
+    <string name="settings_autoplay_next">Sonraki bölümü otomatik oynat</string>
+    <string name="settings_autoplay_next_detail">Bölüm sonuna doğru “Sıradaki” geri sayımını gösterir.</string>
+    <string name="settings_invert_channel_keys">Kanal yukarı/aşağıyı ters çevir</string>
+    <string name="settings_invert_channel_keys_detail">Kapalı: aşağı sonraki kanala geçer. Açık: yukarı sonraki kanala geçer.</string>
+    <string name="settings_categories_short">Tür seçin veya kategorileri gizleyin</string>
+    <string name="settings_original_names">Orijinal adları göster</string>
+    <string name="settings_original_names_detail">Başlıkları listede olduğu gibi gösterir (ön ekler ve kalite etiketleriyle).</string>
+    <string name="settings_tmdb_key">TMDB API anahtarı</string>
+    <string name="settings_tmdb_key_set">Etkin</string>
+    <string name="settings_tmdb_key_none">Ayarlanmadı (isteğe bağlı)</string>
+    <string name="settings_tmdb_help">İsteğe bağlı: themoviedb.org üzerinden açıklama, arka plan görseli, puan ve oyuncu bilgisi ekler. v3 API anahtarı veya v4 okuma erişim belirteci girin.</string>
+    <string name="settings_tmdb_placeholder">API anahtarı veya okuma erişim belirteci</string>
+    <string name="settings_clear_metadata">Meta veri önbelleğini temizle</string>
+    <string name="settings_about">PopTV hakkında</string>
+    <string name="settings_about_detail">Sürüm ve açık kaynak lisansları</string>
+
+    <!-- About -->
+    <string name="about_version">Sürüm %1$s (%2$d)</string>
+    <string name="about_description">PopTV, kendi IPTV sağlayıcınızın M3U listelerini oynatır. Herhangi bir içerik sağlamaz.</string>
+    <string name="about_tmdb_notice">Bu ürün TMDB API\'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.</string>
+    <string name="about_licenses">Açık kaynak lisansları</string>
 </resources>

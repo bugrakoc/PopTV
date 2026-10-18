@@ -17,6 +17,13 @@
         android:name="android.hardware.microphone"
         android:required="false" />
 
+    <!-- Voice search (package visibility on Android 11+). -->
+    <queries>
+        <intent>
+            <action android:name="android.speech.action.RECOGNIZE_SPEECH" />
+        </intent>
+    </queries>
+
     <application
         android:name=".PopTvApp"
         android:allowBackup="false"

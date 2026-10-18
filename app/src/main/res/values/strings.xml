@@ -204,4 +204,92 @@
     <string name="guide_watch_channel">Watch channel</string>
     <string name="guide_unavailable">No program guide available</string>
     <string name="guide_unavailable_detail">Your playlist does not provide a guide. You can enter an XMLTV guide URL in Settings › Program guide.</string>
+
+    <!-- Search -->
+    <string name="search_hint">Channels, movies, shows…</string>
+    <string name="search_voice">Voice search</string>
+    <string name="search_prompt">Type to search channels, movies and shows</string>
+    <string name="search_too_short">Type at least %1$d characters</string>
+    <string name="search_no_results">No results for “%1$s”</string>
+    <string name="search_channels">Channels (%1$d)</string>
+    <string name="search_movies">Movies (%1$d)</string>
+    <string name="search_shows">Shows (%1$d)</string>
+
+    <!-- Settings -->
+    <string name="action_save">Save</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_remove">Remove</string>
+    <string name="settings_section_playlist">Playlist</string>
+    <string name="settings_section_epg">Program guide</string>
+    <string name="settings_section_player">Player</string>
+    <string name="settings_section_content">Content</string>
+    <string name="settings_section_metadata">Metadata</string>
+    <string name="settings_section_about">About</string>
+    <string name="settings_refresh_playlist">Refresh playlist now</string>
+    <string name="settings_last_refresh">Last updated %1$s · %2$s</string>
+    <string name="settings_last_refresh_short">Last updated %1$s</string>
+    <string name="settings_never">never</string>
+    <string name="settings_off">Off</string>
+    <plurals name="every_hours">
+        <item quantity="one">Every hour</item>
+        <item quantity="other">Every %d hours</item>
+    </plurals>
+    <string name="settings_auto_refresh">Automatic refresh</string>
+    <string name="settings_logout">Log out / change playlist</string>
+    <string name="settings_logout_detail">Removes the playlist and all local data</string>
+    <string name="settings_logout_confirm_title">Log out?</string>
+    <string name="settings_logout_confirm_message">The playlist, favorites, watch history, resume positions, guide and settings will be deleted from this device.</string>
+    <string name="settings_refresh_epg">Refresh guide now</string>
+    <string name="settings_epg_loading">Loading… %1$d programs</string>
+    <string name="settings_epg_done">%1$d programs, %2$d channels matched</string>
+    <string name="settings_epg_url">Guide URL (XMLTV)</string>
+    <string name="settings_epg_url_set">Custom URL set</string>
+    <string name="settings_epg_url_auto">Automatic (from playlist)</string>
+    <string name="settings_epg_url_help">Optional. Used when the playlist does not provide a working guide. Plain .xml and gzip-compressed .xml.gz are supported. Leave empty to remove.</string>
+    <string name="settings_epg_offset">Guide time offset</string>
+    <string name="settings_epg_offset_none">No offset</string>
+    <string name="settings_epg_offset_hours">%1$s h</string>
+    <string name="settings_epg_offset_minutes">%1$s min</string>
+    <string name="settings_decoder">Decoder</string>
+    <string name="decoder_hardware_detail">Hardware decoders first (H.264, HEVC, VP9, AV1); falls back to software automatically.</string>
+    <string name="decoder_software_detail">Software decoders first. Use if a stream shows artifacts or a green screen. 4K may stutter.</string>
+    <string name="decoder_auto_detail">Platform default order.</string>
+    <string name="settings_tunneling">Tunneled playback</string>
+    <string name="settings_tunneling_detail">Can improve A/V sync on some TVs. Turn off if video does not start.</string>
+    <string name="settings_buffer">Buffer size</string>
+    <string name="buffer_small">Small (faster start)</string>
+    <string name="buffer_normal">Normal</string>
+    <string name="buffer_large">Large (fewer interruptions)</string>
+    <string name="settings_user_agent">User agent</string>
+    <string name="settings_user_agent_help">Some providers block unknown players. The default identifies as VLC.</string>
+    <string name="settings_subtitle_size">Subtitle size</string>
+    <string name="size_small">Small</string>
+    <string name="size_normal">Normal</string>
+    <string name="size_large">Large</string>
+    <string name="size_xlarge">Extra large</string>
+    <string name="settings_subtitle_color">Subtitle color</string>
+    <string name="color_white">White</string>
+    <string name="color_yellow">Yellow</string>
+    <string name="settings_subtitle_background">Subtitle background</string>
+    <string name="settings_autoplay_next">Autoplay next episode</string>
+    <string name="settings_autoplay_next_detail">Shows an “Up next” countdown near the end of an episode.</string>
+    <string name="settings_invert_channel_keys">Invert channel up/down</string>
+    <string name="settings_invert_channel_keys_detail">Off: down goes to the next channel. On: up goes to the next channel.</string>
+    <string name="settings_categories_short">Choose type or hide categories</string>
+    <string name="settings_original_names">Show original names</string>
+    <string name="settings_original_names_detail">Show titles exactly as in the playlist (with prefixes and quality tags).</string>
+    <string name="settings_tmdb_key">TMDB API key</string>
+    <string name="settings_tmdb_key_set">Enabled</string>
+    <string name="settings_tmdb_key_none">Not set (optional)</string>
+    <string name="settings_tmdb_help">Optional: adds descriptions, backdrops, ratings and cast from themoviedb.org. Enter a v3 API key or a v4 read access token.</string>
+    <string name="settings_tmdb_placeholder">API key or read access token</string>
+    <string name="settings_clear_metadata">Clear metadata cache</string>
+    <string name="settings_about">About PopTV</string>
+    <string name="settings_about_detail">Version and open-source licenses</string>
+
+    <!-- About -->
+    <string name="about_version">Version %1$s (%2$d)</string>
+    <string name="about_description">PopTV plays M3U playlists from your own IPTV provider. It does not provide any content.</string>
+    <string name="about_tmdb_notice">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
+    <string name="about_licenses">Open-source licenses</string>
 </resources>

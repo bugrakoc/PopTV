@@ -32,6 +32,8 @@ data class M3uEntry(
     val tvgLogo: String? get() = (attributes["tvg-logo"] ?: attributes["logo"]).nullIfBlank()
     val tvgChno: Int? get() = (attributes["tvg-chno"] ?: attributes["channel-number"])?.trim()?.toIntOrNull()
     val tvgType: String? get() = attributes["tvg-type"].nullIfBlank()
+    val subtitleUrl: String?
+        get() = (attributes["subtitles"] ?: attributes["subtitle"] ?: attributes["tvg-subtitle"]).nullIfBlank()
 
     /** `group-title` wins over `#EXTGRP`; empty string when neither is present. */
     val group: String get() = attributes["group-title"].nullIfBlank() ?: extGroup.nullIfBlank() ?: ""

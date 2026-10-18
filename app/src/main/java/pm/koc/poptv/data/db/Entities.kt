@@ -44,6 +44,8 @@ data class StreamEntity(
     val sortIndex: Int,
     val userAgent: String?,
     val referrer: String?,
+    /** Sidecar subtitle URL from a `subtitles`/`tvg-subtitle` attribute, if the playlist has one. */
+    val subtitleUrl: String?,
     val seriesKey: String?,
     val seriesName: String?,
     val season: Int?,

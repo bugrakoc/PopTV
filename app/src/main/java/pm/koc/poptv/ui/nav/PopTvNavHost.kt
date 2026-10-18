@@ -7,7 +7,9 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import pm.koc.poptv.ui.MainViewModel
+import pm.koc.poptv.ui.live.LiveTvScreen
 import pm.koc.poptv.ui.login.LoginScreen
+import pm.koc.poptv.ui.player.PlayerScreen
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -47,7 +49,15 @@ fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewMod
                 onOpenSettings = { nav.navigate(SettingsRoute) },
             )
         }
-        composable<LiveRoute> { Placeholder() }
+        composable<LiveRoute> {
+            LiveTvScreen(
+                onPlay = { stream, context -> nav.navigate(PlayerRoute(stream.key, context)) },
+                onSearch = { nav.navigate(SearchRoute) },
+            )
+        }
+        composable<PlayerRoute> {
+            PlayerScreen(onBack = { nav.popBackStack() })
+        }
         composable<MoviesRoute> { Placeholder() }
         composable<ShowsRoute> { Placeholder() }
         composable<GuideRoute> { Placeholder() }

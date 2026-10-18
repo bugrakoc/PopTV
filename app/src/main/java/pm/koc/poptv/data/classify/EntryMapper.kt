@@ -57,6 +57,7 @@ class EntryMapper(
             sortIndex = index++,
             userAgent = entry.userAgent,
             referrer = entry.referrer,
+            subtitleUrl = entry.subtitleUrl,
             seriesKey = series.key,
             seriesName = series.name,
             season = episode?.season,

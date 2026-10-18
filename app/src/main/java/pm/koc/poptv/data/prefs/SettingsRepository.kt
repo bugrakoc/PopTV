@@ -83,6 +83,7 @@ class SettingsRepository @Inject constructor(
     suspend fun setSubtitleBackground(value: Boolean) = store.edit { it[K.subtitleBackground] = value }
     suspend fun setAutoplayNext(value: Boolean) = store.edit { it[K.autoplayNext] = value }
     suspend fun setShowOriginalNames(value: Boolean) = store.edit { it[K.showOriginalNames] = value }
+    suspend fun setInvertChannelKeys(value: Boolean) = store.edit { it[K.invertChannelKeys] = value }
 
     // ---- State ----
 
@@ -120,6 +121,7 @@ class SettingsRepository @Inject constructor(
         subtitleBackground = this[K.subtitleBackground] ?: true,
         autoplayNext = this[K.autoplayNext] ?: true,
         showOriginalNames = this[K.showOriginalNames] ?: false,
+        invertChannelKeys = this[K.invertChannelKeys] ?: false,
     )
 
     private fun Preferences.toState() = AppState(
@@ -151,6 +153,7 @@ class SettingsRepository @Inject constructor(
         val subtitleBackground = booleanPreferencesKey("subtitle_background")
         val autoplayNext = booleanPreferencesKey("autoplay_next")
         val showOriginalNames = booleanPreferencesKey("show_original_names")
+        val invertChannelKeys = booleanPreferencesKey("invert_channel_keys")
 
         val lastPlaylistRefresh = longPreferencesKey("last_playlist_refresh")
         val playlistEntryCount = intPreferencesKey("playlist_entry_count")

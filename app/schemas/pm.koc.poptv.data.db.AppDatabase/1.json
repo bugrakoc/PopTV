@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7885e4103a4c674a0bf75ae7b91896b7",
+    "identityHash": "125441ddea1b260e3d1ffbf953e48d1d",
     "entities": [
       {
         "tableName": "streams",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`key` TEXT NOT NULL, `name` TEXT NOT NULL, `displayName` TEXT NOT NULL, `searchName` TEXT NOT NULL, `url` TEXT NOT NULL, `logo` TEXT, `groupTitle` TEXT NOT NULL, `tvgId` TEXT, `tvgName` TEXT, `number` INTEGER NOT NULL, `type` TEXT NOT NULL, `detectedType` TEXT NOT NULL, `hidden` INTEGER NOT NULL, `sortIndex` INTEGER NOT NULL, `userAgent` TEXT, `referrer` TEXT, `seriesKey` TEXT, `seriesName` TEXT, `season` INTEGER, `episode` INTEGER, `year` INTEGER, `epgNameKey` TEXT NOT NULL, `epgChannelId` TEXT, `generation` INTEGER NOT NULL, PRIMARY KEY(`key`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`key` TEXT NOT NULL, `name` TEXT NOT NULL, `displayName` TEXT NOT NULL, `searchName` TEXT NOT NULL, `url` TEXT NOT NULL, `logo` TEXT, `groupTitle` TEXT NOT NULL, `tvgId` TEXT, `tvgName` TEXT, `number` INTEGER NOT NULL, `type` TEXT NOT NULL, `detectedType` TEXT NOT NULL, `hidden` INTEGER NOT NULL, `sortIndex` INTEGER NOT NULL, `userAgent` TEXT, `referrer` TEXT, `subtitleUrl` TEXT, `seriesKey` TEXT, `seriesName` TEXT, `season` INTEGER, `episode` INTEGER, `year` INTEGER, `epgNameKey` TEXT NOT NULL, `epgChannelId` TEXT, `generation` INTEGER NOT NULL, PRIMARY KEY(`key`))",
         "fields": [
           {
             "fieldPath": "key",
@@ -97,6 +97,11 @@
           {
             "fieldPath": "referrer",
             "columnName": "referrer",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "subtitleUrl",
+            "columnName": "subtitleUrl",
             "affinity": "TEXT"
           },
           {
@@ -762,7 +767,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7885e4103a4c674a0bf75ae7b91896b7')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '125441ddea1b260e3d1ffbf953e48d1d')"
     ]
   }
 }

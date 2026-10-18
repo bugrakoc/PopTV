@@ -20,6 +20,8 @@ data class AppSettings(
     val subtitleBackground: Boolean = true,
     val autoplayNext: Boolean = true,
     val showOriginalNames: Boolean = false,
+    /** false: D-pad down = next channel (list order); true: D-pad up = next channel. */
+    val invertChannelKeys: Boolean = false,
 ) {
     companion object {
         const val DEFAULT_USER_AGENT = "VLC/3.0.21 LibVLC/3.0.21"

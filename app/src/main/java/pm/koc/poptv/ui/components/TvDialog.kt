@@ -34,7 +34,7 @@ fun TvDialog(
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Surface(
-            modifier = modifier.widthIn(min = 360.dp, max = 640.dp),
+            modifier = modifier.widthIn(min = 360.dp, max = 640.dp).ignorePressesStartedElsewhere(),
             shape = RoundedCornerShape(16.dp),
             colors = SurfaceDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         ) {

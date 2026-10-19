@@ -90,6 +90,7 @@ import pm.koc.poptv.player.ResizeMode
 import pm.koc.poptv.ui.components.Choice
 import pm.koc.poptv.ui.components.ChoiceDialog
 import pm.koc.poptv.ui.components.formatPosition
+import pm.koc.poptv.ui.components.isSelectKey
 import pm.koc.poptv.ui.components.safeRequestFocus
 import pm.koc.poptv.ui.live.ChannelBrowser
 import pm.koc.poptv.ui.live.ChannelBrowserViewModel
@@ -115,6 +116,7 @@ fun PlayerScreen(
     var pendingSeek by remember { mutableStateOf<Long?>(null) }
     var seekPreviewVisible by remember { mutableStateOf(false) }
     var lastInteraction by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var selectArmed by remember { mutableStateOf(false) }
     val rootFocus = remember { FocusRequester() }
     val playFocus = remember { FocusRequester() }
     val upNextFocus = remember { FocusRequester() }
@@ -177,6 +179,20 @@ fun PlayerScreen(
         }
     }
 
+    /**
+     * OK acts on release: acting on press would open an overlay that then receives the rest of the press
+     * (held repeats long-press its focused item, the release clicks it).
+     */
+    fun onSelectKey(down: Boolean, native: KeyEvent, action: () -> Unit): Boolean {
+        if (down) {
+            if (native.repeatCount == 0) selectArmed = true
+        } else if (selectArmed) {
+            selectArmed = false
+            action()
+        }
+        return true
+    }
+
     fun handleKey(event: androidx.compose.ui.input.key.KeyEvent): Boolean {
         val native = event.nativeKeyEvent
         val code = native.keyCode
@@ -193,6 +209,11 @@ fun PlayerScreen(
         if (overlay != Overlay.NONE || dialog != null) return false
 
         if (ui.isLive) {
+            if (isSelectKey(code) && !failed && ui.upNext == null) {
+                return onSelectKey(down, native) {
+                    if (ui.numberInput.isNotEmpty()) viewModel.commitNumber() else overlay = Overlay.CHANNELS
+                }
+            }
             if (!down) return false
             val nextOnDown = !settings.invertChannelKeys
             when (code) {
@@ -206,10 +227,6 @@ fun PlayerScreen(
             }
             if (failed || ui.upNext != null) return false // let the focused buttons handle OK / left / right
             return when (code) {
-                KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER -> {
-                    if (ui.numberInput.isNotEmpty()) viewModel.commitNumber() else overlay = Overlay.CHANNELS
-                    true
-                }
                 KeyEvent.KEYCODE_DPAD_LEFT, KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.KEYCODE_MENU, KeyEvent.KEYCODE_GUIDE -> {
                     overlay = Overlay.CHANNELS
                     true
@@ -232,9 +249,9 @@ fun PlayerScreen(
             }
             return true
         }
+        if (isSelectKey(code)) return onSelectKey(down, native) { overlay = Overlay.CONTROLS }
         if (!down) return false
         return when (code) {
-            KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.KEYCODE_ENTER, KeyEvent.KEYCODE_NUMPAD_ENTER,
             KeyEvent.KEYCODE_DPAD_UP, KeyEvent.KEYCODE_DPAD_DOWN, KeyEvent.KEYCODE_MENU -> {
                 overlay = Overlay.CONTROLS
                 true

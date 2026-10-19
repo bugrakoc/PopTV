@@ -47,6 +47,8 @@
     <string name="error_network">Network error. Check your internet connection and try again.</string>
     <string name="error_empty_playlist">The playlist is empty. The provider returned no channels or videos.</string>
     <string name="error_invalid_playlist">The server did not return a valid M3U playlist.</string>
+    <string name="error_account_rejected">The provider rejected the username or password in the link.</string>
+    <string name="error_account_inactive">The provider says the account is not active (status: %1$s). Your subscription may have expired.</string>
     <string name="error_invalid_guide">The program guide could not be read.</string>
     <string name="error_storage">Could not save data on the device. Free up some space and try again.</string>
     <string name="error_unknown">Something went wrong. Please try again.</string>
@@ -161,6 +163,9 @@
     <string name="vod_empty">Nothing here</string>
     <string name="season_n">Season %1$d</string>
     <string name="episode_short">E%1$02d</string>
+    <string name="show_loading_episodes">Loading episodes…</string>
+    <string name="show_no_episodes">The provider lists no episodes for this show.</string>
+    <string name="show_episodes_failed">Episodes could not be loaded.</string>
     <plurals name="episodes_count">
         <item quantity="one">%d episode</item>
         <item quantity="other">%d episodes</item>

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -18,11 +19,13 @@ import kotlinx.coroutines.launch
 import pm.koc.poptv.data.db.PlaybackPositionEntity
 import pm.koc.poptv.data.db.ShowEntity
 import pm.koc.poptv.data.db.StreamEntity
+import pm.koc.poptv.data.net.AppError
 import pm.koc.poptv.data.prefs.SettingsRepository
 import pm.koc.poptv.data.repo.LibraryRepository
 import pm.koc.poptv.data.repo.Metadata
 import pm.koc.poptv.data.repo.MetadataRepository
 import pm.koc.poptv.data.repo.PlaybackRepository
+import pm.koc.poptv.data.repo.XtreamEpisodeLoader
 import pm.koc.poptv.domain.EpisodeRef
 import pm.koc.poptv.domain.ItemKind
 import pm.koc.poptv.domain.ResumePolicy
@@ -77,12 +80,20 @@ data class EpisodeUi(
     val watched: Boolean,
 )
 
+/** On-demand episode loading (Xtream API shows); M3U shows stay [Idle]. */
+sealed interface EpisodesLoad {
+    data object Idle : EpisodesLoad
+    data object Loading : EpisodesLoad
+    data class Failed(val error: AppError) : EpisodesLoad
+}
+
 @HiltViewModel
 class ShowDetailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val library: LibraryRepository,
     private val playback: PlaybackRepository,
     private val metadataRepository: MetadataRepository,
+    private val episodeLoader: XtreamEpisodeLoader,
 ) : ViewModel() {
     val seriesKey = savedStateHandle.toRoute<ShowDetailRoute>().seriesKey
 
@@ -117,16 +128,37 @@ class ShowDetailViewModel @Inject constructor(
     private val _metadata = MutableStateFlow<Metadata?>(null)
     val metadata: StateFlow<Metadata?> = _metadata.asStateFlow()
 
+    private val _episodesLoad = MutableStateFlow<EpisodesLoad>(EpisodesLoad.Idle)
+    val episodesLoad: StateFlow<EpisodesLoad> = _episodesLoad.asStateFlow()
+
     init {
         viewModelScope.launch {
             val s = library.observeShow(seriesKey).filterNotNull().first()
             _metadata.value = metadataRepository.show(s.name, s.year)
         }
         viewModelScope.launch {
-            playback.observeSeriesPositions(seriesKey).collect {
+            // Episodes can arrive after the screen opened (on-demand loading), so follow both.
+            combine(library.observeEpisodes(seriesKey), playback.observeSeriesPositions(seriesKey)) { _, _ -> }.collect {
                 val r = playback.resumeEpisode(seriesKey)
                 _resume.value = r
-                if (_selectedSeason.value == null) _selectedSeason.value = r?.season ?: 1
+                if (_selectedSeason.value == null && r != null) _selectedSeason.value = r.season ?: 1
+            }
+        }
+        loadEpisodes()
+    }
+
+    /** Refreshes on-demand episodes on every visit; stored ones stay visible meanwhile. */
+    fun loadEpisodes() {
+        if (_episodesLoad.value == EpisodesLoad.Loading) return
+        _episodesLoad.value = EpisodesLoad.Loading
+        viewModelScope.launch {
+            _episodesLoad.value = try {
+                episodeLoader.refresh(seriesKey)
+                EpisodesLoad.Idle
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                EpisodesLoad.Failed(AppError.from(e))
             }
         }
     }

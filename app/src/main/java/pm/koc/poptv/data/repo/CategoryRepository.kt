@@ -22,7 +22,8 @@ class CategoryRepository @Inject constructor(
 
     suspend fun groups(): List<GroupInfo> {
         val overrides = db.overrideDao().all().associate { it.groupTitle to it.override }
-        val rows = db.streamDao().groupSummaries().map {
+        val summaries = db.streamDao().groupSummaries() + db.xtreamSeriesDao().groupSummaries()
+        val rows = summaries.map {
             CategoryGroups.Row(it.groupTitle, it.detectedType, it.count, it.firstIndex)
         }
         return CategoryGroups.fold(rows, overrides)

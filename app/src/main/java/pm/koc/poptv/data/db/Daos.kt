@@ -55,6 +55,16 @@ interface StreamDao {
     @Query("SELECT COUNT(*) FROM streams")
     suspend fun count(): Int
 
+    /** Channels and movies plus distinct shows of one import generation (what the user can browse). */
+    @Query(
+        """SELECT (SELECT COUNT(*) FROM streams WHERE generation = :generation AND type != 'SERIES') +
+           (SELECT COUNT(DISTINCT seriesKey) FROM streams WHERE generation = :generation AND type = 'SERIES')"""
+    )
+    suspend fun libraryItemCount(generation: Int): Int
+
+    @Query("SELECT COUNT(*) FROM streams WHERE type != 'SERIES'")
+    suspend fun nonSeriesCount(): Int
+
     @Query("SELECT COUNT(*) FROM streams WHERE type = :type AND hidden = 0")
     fun observeCount(type: ContentType): Flow<Int>
 
@@ -122,6 +132,19 @@ interface StreamDao {
 
     @Query("SELECT * FROM streams WHERE seriesKey = :seriesKey AND type = 'SERIES' AND hidden = 0 ORDER BY season IS NULL, season, episode IS NULL, episode, sortIndex")
     suspend fun episodes(seriesKey: String): List<StreamEntity>
+
+    @Query("DELETE FROM streams WHERE seriesKey = :seriesKey AND detectedType = 'SERIES'")
+    suspend fun deleteEpisodes(seriesKey: String)
+
+    /**
+     * Moves on-demand Xtream episodes of shows that are still in the playlist into [generation], so a refresh
+     * keeps them (and continue watching keeps working) instead of deleting them with the old generation.
+     */
+    @Query(
+        """UPDATE streams SET generation = :generation WHERE generation != :generation AND detectedType = 'SERIES'
+           AND seriesKey IN (SELECT seriesKey FROM xtream_series)"""
+    )
+    suspend fun adoptXtreamEpisodes(generation: Int): Int
 
     @Query(
         """SELECT seriesKey, seriesName, logo, groupTitle, MIN(sortIndex) AS firstIndex, COUNT(*) AS episodeCount,
@@ -219,6 +242,31 @@ interface ShowDao {
 
     @Query("SELECT COUNT(*) FROM shows")
     fun observeCount(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM shows")
+    suspend fun count(): Int
+
+    /** Only writes when the numbers changed, so an unchanged show does not invalidate open show lists. */
+    @Query("UPDATE shows SET episodeCount = :episodes, seasonCount = :seasons WHERE seriesKey = :key AND (episodeCount != :episodes OR seasonCount != :seasons)")
+    suspend fun updateCounts(key: String, episodes: Int, seasons: Int)
+}
+
+@Dao
+interface XtreamSeriesDao {
+    @Query("SELECT * FROM xtream_series ORDER BY sortIndex")
+    suspend fun all(): List<XtreamSeriesEntity>
+
+    @Query("SELECT * FROM xtream_series WHERE seriesKey = :key ORDER BY sortIndex")
+    suspend fun forKey(key: String): List<XtreamSeriesEntity>
+
+    @Query("SELECT groupTitle, 'SERIES' AS detectedType, COUNT(*) AS count, MIN(sortIndex) AS firstIndex FROM xtream_series GROUP BY groupTitle")
+    suspend fun groupSummaries(): List<GroupSummary>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<XtreamSeriesEntity>)
+
+    @Query("DELETE FROM xtream_series")
+    suspend fun clear()
 }
 
 @Dao

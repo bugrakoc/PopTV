@@ -85,6 +85,23 @@ data class ShowEntity(
     val year: Int?,
 )
 
+/**
+ * A show from the Xtream Codes API (playlists imported through `player_api.php` instead of `get.php`).
+ * Episodes are fetched on demand when the show is opened and stored as [StreamEntity] rows with the same
+ * [seriesKey]. Several provider series may share one key (the same show listed in two categories).
+ * Replaced on every Xtream import, cleared by an M3U import.
+ */
+@Entity(tableName = "xtream_series", indices = [Index(value = ["seriesKey"])])
+data class XtreamSeriesEntity(
+    @PrimaryKey val seriesId: String,
+    val seriesKey: String,
+    val name: String,
+    val logo: String?,
+    val groupTitle: String,
+    val sortIndex: Int,
+    val year: Int?,
+)
+
 /** User-chosen type for a group-title. Survives refreshes. */
 @Entity(tableName = "category_overrides")
 data class CategoryOverrideEntity(

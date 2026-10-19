@@ -96,4 +96,35 @@ class EntryMapperTest {
         val e = mapper().map(entry("TR: TRT 1 HD", "http://example.com/live/user/pass/1.ts", "Ulusal"))
         assertThat(e.epgNameKey).isEqualTo("trt1")
     }
+
+    @Test
+    fun `known show membership wins over the title`() {
+        val e = mapper().map(
+            entry("Pilot", "http://example.com/series/user/pass/9.mkv", "Diziler", mapOf("tvg-type" to "series")),
+            sortIndex = 500,
+            show = EntryMapper.ShowRef("tr:friends", "Friends", season = 1, episode = 2),
+        )
+        assertThat(e.type).isEqualTo(ContentType.SERIES)
+        assertThat(e.seriesKey).isEqualTo("tr:friends")
+        assertThat(e.seriesName).isEqualTo("Friends")
+        assertThat(e.season).isEqualTo(1)
+        assertThat(e.episode).isEqualTo(2)
+        assertThat(e.sortIndex).isEqualTo(500)
+    }
+
+    @Test
+    fun `show titles get the key their episodes are grouped by`() {
+        val episode = mapper().map(entry("TR - Show Name S01E01 FHD", "http://example.com/series/user/pass/1.mp4", "Diziler"))
+        val show = EntryMapper.showIdentity("TR - Show Name (2019)")
+        assertThat(show.key).isEqualTo(episode.seriesKey)
+        assertThat(show.name).isEqualTo("Show Name")
+        assertThat(show.year).isEqualTo(2019)
+    }
+
+    @Test
+    fun `explicit sort indices do not disturb arrival order`() {
+        val m = mapper()
+        m.map(entry("A", "http://example.com/live/user/pass/1.ts"), sortIndex = 900)
+        assertThat(m.map(entry("B", "http://example.com/live/user/pass/2.ts")).sortIndex).isEqualTo(1)
+    }
 }

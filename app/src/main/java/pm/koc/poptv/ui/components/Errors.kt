@@ -17,6 +17,8 @@ fun AppError.localizedMessage(): String = when (this) {
     is AppError.Network -> stringResource(R.string.error_network)
     is AppError.EmptyPlaylist -> stringResource(R.string.error_empty_playlist)
     is AppError.InvalidPlaylist -> stringResource(R.string.error_invalid_playlist)
+    is AppError.AccountRejected ->
+        if (status == null) stringResource(R.string.error_account_rejected) else stringResource(R.string.error_account_inactive, status)
     is AppError.InvalidGuide -> stringResource(R.string.error_invalid_guide)
     is AppError.Storage -> stringResource(R.string.error_storage)
     is AppError.Unknown -> stringResource(R.string.error_unknown)

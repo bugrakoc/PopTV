@@ -17,7 +17,9 @@ sealed class AppError(message: String? = null, cause: Throwable? = null) : Excep
     class Ssl(cause: Throwable? = null) : AppError("ssl", cause)
     class Network(cause: Throwable? = null) : AppError("network", cause)
     class EmptyPlaylist : AppError("empty playlist")
-    class InvalidPlaylist : AppError("invalid playlist")
+    class InvalidPlaylist(cause: Throwable? = null) : AppError("invalid playlist", cause)
+    /** Xtream login answered but refused the account; [status] is the panel's status ("Expired", ...) if any. */
+    class AccountRejected(val status: String?) : AppError("account rejected: $status")
     class InvalidGuide : AppError("invalid guide")
     class Storage(cause: Throwable? = null) : AppError("storage", cause)
     class Unknown(cause: Throwable? = null) : AppError(cause?.javaClass?.simpleName, cause)

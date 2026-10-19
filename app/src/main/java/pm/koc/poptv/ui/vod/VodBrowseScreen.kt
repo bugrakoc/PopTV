@@ -166,7 +166,8 @@ fun VodBrowseScreen(
                                     PosterCard(
                                         title = show.name,
                                         imageUrl = show.logo,
-                                        subtitle = pluralStringResource(R.plurals.episodes_count, show.episodeCount, show.episodeCount),
+                                        // 0 for Xtream shows whose episodes have not been loaded yet
+                                        subtitle = if (show.episodeCount == 0) null else pluralStringResource(R.plurals.episodes_count, show.episodeCount, show.episodeCount),
                                         onClick = { onOpenShow(show.seriesKey) },
                                         width = 150.dp,
                                         modifier = Modifier

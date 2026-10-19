@@ -45,6 +45,8 @@
     <string name="error_network">Ağ hatası. İnternet bağlantınızı kontrol edip tekrar deneyin.</string>
     <string name="error_empty_playlist">Oynatma listesi boş. Sağlayıcı hiç kanal veya video döndürmedi.</string>
     <string name="error_invalid_playlist">Sunucu geçerli bir M3U oynatma listesi döndürmedi.</string>
+    <string name="error_account_rejected">Sağlayıcı bağlantıdaki kullanıcı adını veya şifreyi reddetti.</string>
+    <string name="error_account_inactive">Sağlayıcıya göre hesap etkin değil (durum: %1$s). Aboneliğiniz sona ermiş olabilir.</string>
     <string name="error_invalid_guide">Yayın akışı okunamadı.</string>
     <string name="error_storage">Veriler cihaza kaydedilemedi. Biraz yer açıp tekrar deneyin.</string>
     <string name="error_unknown">Bir şeyler ters gitti. Lütfen tekrar deneyin.</string>
@@ -159,6 +161,9 @@
     <string name="vod_empty">Burada bir şey yok</string>
     <string name="season_n">%1$d. Sezon</string>
     <string name="episode_short">B%1$02d</string>
+    <string name="show_loading_episodes">Bölümler yükleniyor…</string>
+    <string name="show_no_episodes">Sağlayıcı bu dizi için bölüm listelemiyor.</string>
+    <string name="show_episodes_failed">Bölümler yüklenemedi.</string>
     <plurals name="episodes_count">
         <item quantity="one">%d bölüm</item>
         <item quantity="other">%d bölüm</item>

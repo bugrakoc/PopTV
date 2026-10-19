@@ -71,6 +71,7 @@ import pm.koc.poptv.ui.components.RemoteImage
 import pm.koc.poptv.ui.components.ScreenHorizontalPadding
 import pm.koc.poptv.ui.components.TvDialog
 import pm.koc.poptv.ui.components.formatPosition
+import pm.koc.poptv.ui.components.localizedMessage
 import pm.koc.poptv.ui.components.safeRequestFocus
 import pm.koc.poptv.ui.live.listItemColors
 import pm.koc.poptv.ui.theme.Background
@@ -242,10 +243,12 @@ fun ShowDetailScreen(
     val selectedSeason by viewModel.selectedSeason.collectAsStateWithLifecycle()
     val favorite by viewModel.isFavorite.collectAsStateWithLifecycle()
     val metadata by viewModel.metadata.collectAsStateWithLifecycle()
+    val episodesLoad by viewModel.episodesLoad.collectAsStateWithLifecycle()
     var menuFor by remember { mutableStateOf<EpisodeUi?>(null) }
     var lastFocused by rememberSaveable { mutableStateOf<String?>(null) }
     val playFocus = remember { FocusRequester() }
     val episodeFocus = remember { FocusRequester() }
+    val retryFocus = remember { FocusRequester() }
 
     val sh = show
     if (sh == null) {
@@ -261,7 +264,7 @@ fun ShowDetailScreen(
                 poster = sh.logo,
                 metadata = metadata,
                 year = sh.year,
-                extraLine = pluralStringResource(R.plurals.seasons_count, seasons.size, seasons.size),
+                extraLine = if (seasons.isEmpty()) null else pluralStringResource(R.plurals.seasons_count, seasons.size, seasons.size),
             ) {
                 val r = resume
                 if (r != null) {
@@ -284,6 +287,24 @@ fun ShowDetailScreen(
                     items(seasons, key = { it.number }) { s ->
                         FilterChip(selected = s.number == season?.number, onClick = { viewModel.selectSeason(s.number) }) {
                             Text(stringResource(R.string.season_n, s.number))
+                        }
+                    }
+                }
+            }
+        }
+        if (seasons.isEmpty()) {
+            item(key = "episodes-state") {
+                Column(Modifier.padding(horizontal = ScreenHorizontalPadding, vertical = 16.dp)) {
+                    when (val load = episodesLoad) {
+                        EpisodesLoad.Loading -> Text(stringResource(R.string.show_loading_episodes), style = MaterialTheme.typography.titleMedium)
+                        EpisodesLoad.Idle -> Text(stringResource(R.string.show_no_episodes), style = MaterialTheme.typography.titleMedium)
+                        is EpisodesLoad.Failed -> {
+                            Text(stringResource(R.string.show_episodes_failed), style = MaterialTheme.typography.titleMedium)
+                            Spacer(Modifier.height(4.dp))
+                            Text(load.error.localizedMessage(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Spacer(Modifier.height(12.dp))
+                            IconLabelButton(Icons.Filled.Replay, stringResource(R.string.action_retry), viewModel::loadEpisodes, Modifier.focusRequester(retryFocus))
+                            LaunchedEffect(load) { repeat(5) { delay(60); if (retryFocus.safeRequestFocus()) return@LaunchedEffect } }
                         }
                     }
                 }

@@ -17,13 +17,20 @@ import pm.koc.poptv.domain.toContentType
 class EntryMapper(
     private val keys: StableKeyGenerator,
     private val overrides: Map<String, CategoryOverride>,
-    private val generation: Int,
+    val generation: Int,
     private val classifier: ContentClassifier = ContentClassifier(),
 ) {
     private var index = 0
     private var liveCount = 0
 
-    fun map(entry: M3uEntry): StreamEntity {
+    /** Show membership known from the source (Xtream API episodes); wins over what the title implies. */
+    data class ShowRef(val key: String, val name: String, val season: Int?, val episode: Int?)
+
+    /**
+     * @param sortIndex explicit position (Xtream imports order by category); defaults to arrival order.
+     * @param show for episodes whose show, season and episode number are already known.
+     */
+    fun map(entry: M3uEntry, sortIndex: Int? = null, show: ShowRef? = null): StreamEntity {
         val group = entry.group
         val cleaned = NameCleaner.clean(entry.title)
         val episode = EpisodeParser.parse(cleaned)
@@ -32,7 +39,7 @@ class EntryMapper(
         val type = override?.toContentType() ?: detected
         val hidden = override == CategoryOverride.HIDDEN
 
-        val series = seriesInfo(entry, cleaned, episode, group)
+        val series = show?.let { Series(it.key, it.name) } ?: seriesInfo(entry, cleaned, episode, group)
         val number = if (type == ContentType.LIVE) {
             liveCount++
             entry.tvgChno?.takeIf { it > 0 } ?: liveCount
@@ -54,22 +61,37 @@ class EntryMapper(
             type = type,
             detectedType = detected,
             hidden = hidden,
-            sortIndex = index++,
+            sortIndex = sortIndex ?: index,
             userAgent = entry.userAgent,
             referrer = entry.referrer,
             subtitleUrl = entry.subtitleUrl,
             seriesKey = series.key,
             seriesName = series.name,
-            season = episode?.season,
-            episode = episode?.episode,
+            season = show?.season ?: episode?.season,
+            episode = show?.episode ?: episode?.episode,
             year = episode?.year ?: cleaned.year,
             epgNameKey = entry.tvgName?.let(EpgMatcher::nameKey) ?: EpgMatcher.nameKey(cleaned, entry.title),
             epgChannelId = null,
             generation = generation,
-        )
+        ).also { index++ }
     }
 
     private data class Series(val key: String, val name: String)
+
+    companion object {
+        data class ShowIdentity(val key: String, val name: String, val year: Int?)
+
+        /** Key, name and year for a show title ("TR - Friends (1994)"), by the rule episodes are grouped by. */
+        fun showIdentity(title: String): ShowIdentity {
+            val cleaned = NameCleaner.clean(title)
+            return ShowIdentity(showKey(cleaned.prefix, cleaned.name, title), cleaned.name, cleaned.year)
+        }
+
+        private fun showKey(prefix: String?, name: String, fallback: String): String = buildString {
+            if (prefix != null) append(prefix.lowercase()).append(':')
+            append(TextNormalizer.searchKey(name).ifEmpty { TextNormalizer.searchKey(fallback) })
+        }
+    }
 
     /**
      * Show grouping key: the language prefix plus the folded show name, so "EN - Friends" and "TR - Friends"
@@ -88,10 +110,6 @@ class EntryMapper(
             group.isNotBlank() -> NameCleaner.clean(group).name
             else -> cleaned.name
         }
-        val key = buildString {
-            if (prefix != null) append(prefix.lowercase()).append(':')
-            append(TextNormalizer.searchKey(name).ifEmpty { TextNormalizer.searchKey(entry.title) })
-        }
-        return Series(key, name)
+        return Series(showKey(prefix, name, entry.title), name)
     }
 }

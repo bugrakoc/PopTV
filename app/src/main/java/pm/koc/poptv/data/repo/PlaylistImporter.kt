@@ -19,6 +19,7 @@ import pm.koc.poptv.data.m3u.M3uHeader
 import pm.koc.poptv.data.m3u.M3uParser
 import pm.koc.poptv.data.net.AppError
 import pm.koc.poptv.data.net.HttpDownloader
+import pm.koc.poptv.data.prefs.SettingsRepository
 import pm.koc.poptv.data.xtream.XtreamAccount
 import pm.koc.poptv.data.xtream.XtreamClient
 import pm.koc.poptv.data.xtream.XtreamEntries
@@ -53,6 +54,7 @@ class PlaylistImporter @Inject constructor(
     private val downloader: HttpDownloader,
     private val xtream: XtreamClient,
     private val indexer: LibraryIndexer,
+    private val settings: SettingsRepository,
 ) {
 
     /** What one import produced before the old generation is dropped. */
@@ -82,7 +84,8 @@ class PlaylistImporter @Inject constructor(
         val firstGeneration = streamDao.maxGeneration() + 1
         val previousItems = streamDao.nonSeriesCount() + db.showDao().count()
         val overrides = db.overrideDao().all().associate { it.groupTitle to it.override }
-        fun mapper(generation: Int) = EntryMapper(StableKeyGenerator(UrlUtils.credentials(url)), overrides, generation)
+        val hideAdult = settings.current().hideAdult
+        fun mapper(generation: Int) = EntryMapper(StableKeyGenerator(UrlUtils.credentials(url)), overrides, generation, hideAdult)
         val started = System.currentTimeMillis()
 
         val account = XtreamAccount.fromPlaylistUrl(url)
@@ -131,6 +134,7 @@ class PlaylistImporter @Inject constructor(
         }
         val removed = streamDao.deleteOtherGenerations(generation)
         indexer.rebuildDerived()
+        settings.setAdultFilterApplied(hideAdult)
         Log.i(
             TAG,
             "Imported ${imported.entries} entries (${imported.note}, $adopted loaded episodes kept, " +

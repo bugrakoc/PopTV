@@ -275,6 +275,8 @@
     <string name="settings_categories_short">Tür seçin veya kategorileri gizleyin</string>
     <string name="settings_original_names">Orijinal adları göster</string>
     <string name="settings_original_names_detail">Başlıkları listede olduğu gibi gösterir (ön ekler ve kalite etiketleriyle).</string>
+    <string name="settings_hide_adult">Yetişkin içeriği gizle</string>
+    <string name="settings_hide_adult_detail">Yetişkin kategorilerini (FOR ADULTS, XXX veya +18 gibi) uygulamanın her yerinde gizler.</string>
     <string name="settings_tmdb_key">TMDB API anahtarı</string>
     <string name="settings_tmdb_key_set">Etkin</string>
     <string name="settings_tmdb_key_none">Ayarlanmadı (isteğe bağlı)</string>

@@ -14,10 +14,12 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import pm.koc.poptv.data.net.UserAgentHolder
+import pm.koc.poptv.data.repo.CategoryRepository
 import pm.koc.poptv.data.prefs.SettingsRepository
 import pm.koc.poptv.data.work.WorkScheduler
 import pm.koc.poptv.di.ApplicationScope
@@ -32,6 +34,7 @@ class PopTvApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
     @Inject lateinit var workScheduler: WorkScheduler
     @Inject @ApplicationScope lateinit var appScope: CoroutineScope
     @Inject lateinit var okHttp: OkHttpClient
+    @Inject lateinit var categories: CategoryRepository
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
@@ -63,6 +66,13 @@ class PopTvApp : Application(), Configuration.Provider, SingletonImageLoader.Fac
             settings.settings.map { it.playlistRefreshHours to it.epgRefreshHours }
                 .distinctUntilChanged()
                 .collect { workScheduler.schedule() }
+        }
+        appScope.launch {
+            // Keep the stored library in line with the adult filter: after toggling it, and on the first start
+            // after an update that introduced it (that library still shows everything).
+            combine(settings.settings, settings.state, settings.isLoggedIn) { s, state, loggedIn ->
+                if (loggedIn && s.hideAdult != state.adultFilterApplied) s.hideAdult else null
+            }.distinctUntilChanged().collect { hide -> if (hide != null) categories.applyAdultFilter(hide) }
         }
     }
 }

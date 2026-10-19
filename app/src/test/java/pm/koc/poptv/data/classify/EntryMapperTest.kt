@@ -127,4 +127,14 @@ class EntryMapperTest {
         m.map(entry("A", "http://example.com/live/user/pass/1.ts"), sortIndex = 900)
         assertThat(m.map(entry("B", "http://example.com/live/user/pass/2.ts")).sortIndex).isEqualTo(1)
     }
+
+    @Test
+    fun `adult categories are hidden only while the filter is on`() {
+        val url = "http://example.com/movie/user/pass/1.mp4"
+        val on = EntryMapper(StableKeyGenerator(setOf("user", "pass")), emptyMap(), generation = 3, hideAdult = true)
+        val off = EntryMapper(StableKeyGenerator(setOf("user", "pass")), emptyMap(), generation = 3, hideAdult = false)
+        assertThat(on.map(entry("A", url, "FOR ADULTS ➾ 4K")).hidden).isTrue()
+        assertThat(off.map(entry("A", url, "FOR ADULTS ➾ 4K")).hidden).isFalse()
+        assertThat(on.map(entry("B", "http://example.com/movie/user/pass/2.mp4", "Aksiyon")).hidden).isFalse()
+    }
 }

@@ -42,7 +42,9 @@ class XtreamEpisodeLoader @Inject constructor(
 
         val streamDao = db.streamDao()
         val overrides = db.overrideDao().all().associate { it.groupTitle to it.override }
-        val mapper = EntryMapper(StableKeyGenerator(UrlUtils.credentials(url)), overrides, streamDao.maxGeneration())
+        val mapper = EntryMapper(
+            StableKeyGenerator(UrlUtils.credentials(url)), overrides, streamDao.maxGeneration(), settings.current().hideAdult,
+        )
         val rows = series.flatMap { s ->
             client.episodes(account, s.seriesId).map { e ->
                 mapper.map(

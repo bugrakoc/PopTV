@@ -64,6 +64,8 @@ class SettingsViewModel @Inject constructor(
     fun setAutoplayNext(on: Boolean) = launch { settings.setAutoplayNext(on) }
     fun setInvertChannelKeys(on: Boolean) = launch { settings.setInvertChannelKeys(on) }
     fun setShowOriginalNames(on: Boolean) = launch { settings.setShowOriginalNames(on) }
+    /** The library is updated by the app-wide filter watcher in [pm.koc.poptv.PopTvApp]. */
+    fun setHideAdult(on: Boolean) = launch { settings.setHideAdult(on) }
 
     suspend fun manualEpgUrl(): String = settings.manualEpgUrl()
     fun setManualEpgUrl(url: String) = launch {

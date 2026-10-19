@@ -143,6 +143,7 @@ fun SettingsScreen(
             header(R.string.settings_section_content)
             item { SettingRow(stringResource(R.string.settings_categories), stringResource(R.string.settings_categories_short), onClick = onOpenCategories) }
             item { SwitchRow(stringResource(R.string.settings_original_names), stringResource(R.string.settings_original_names_detail), s.showOriginalNames, viewModel::setShowOriginalNames) }
+            item { SwitchRow(stringResource(R.string.settings_hide_adult), stringResource(R.string.settings_hide_adult_detail), s.hideAdult, viewModel::setHideAdult) }
 
             // ---- Metadata ----
             header(R.string.settings_section_metadata)

@@ -4,6 +4,7 @@ import pm.koc.poptv.core.TextNormalizer
 import pm.koc.poptv.data.db.StreamEntity
 import pm.koc.poptv.data.epg.EpgMatcher
 import pm.koc.poptv.data.m3u.M3uEntry
+import pm.koc.poptv.domain.AdultContent
 import pm.koc.poptv.domain.CategoryOverride
 import pm.koc.poptv.domain.ContentType
 import pm.koc.poptv.domain.StableKeyGenerator
@@ -18,6 +19,7 @@ class EntryMapper(
     private val keys: StableKeyGenerator,
     private val overrides: Map<String, CategoryOverride>,
     val generation: Int,
+    private val hideAdult: Boolean = false,
     private val classifier: ContentClassifier = ContentClassifier(),
 ) {
     private var index = 0
@@ -37,7 +39,7 @@ class EntryMapper(
         val detected = classifier.classify(entry.title, entry.url, group, entry.tvgType, episode).type
         val override = overrides[group]
         val type = override?.toContentType() ?: detected
-        val hidden = override == CategoryOverride.HIDDEN
+        val hidden = AdultContent.hidden(group, override, hideAdult)
 
         val series = show?.let { Series(it.key, it.name) } ?: seriesInfo(entry, cleaned, episode, group)
         val number = if (type == ContentType.LIVE) {

@@ -277,6 +277,8 @@
     <string name="settings_categories_short">Choose type or hide categories</string>
     <string name="settings_original_names">Show original names</string>
     <string name="settings_original_names_detail">Show titles exactly as in the playlist (with prefixes and quality tags).</string>
+    <string name="settings_hide_adult">Hide adult content</string>
+    <string name="settings_hide_adult_detail">Hides adult categories (such as FOR ADULTS, XXX or +18) everywhere in the app.</string>
     <string name="settings_tmdb_key">TMDB API key</string>
     <string name="settings_tmdb_key_set">Enabled</string>
     <string name="settings_tmdb_key_none">Not set (optional)</string>

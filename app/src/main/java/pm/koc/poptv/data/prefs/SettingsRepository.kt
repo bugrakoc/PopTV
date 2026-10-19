@@ -84,6 +84,7 @@ class SettingsRepository @Inject constructor(
     suspend fun setAutoplayNext(value: Boolean) = store.edit { it[K.autoplayNext] = value }
     suspend fun setShowOriginalNames(value: Boolean) = store.edit { it[K.showOriginalNames] = value }
     suspend fun setInvertChannelKeys(value: Boolean) = store.edit { it[K.invertChannelKeys] = value }
+    suspend fun setHideAdult(value: Boolean) = store.edit { it[K.hideAdult] = value }
 
     // ---- State ----
 
@@ -94,6 +95,7 @@ class SettingsRepository @Inject constructor(
     suspend fun setLastEpgRefresh(time: Long) = store.edit { it[K.lastEpgRefresh] = time }
     suspend fun setEpgStatus(status: EpgStatus) = store.edit { it[K.epgStatus] = status.name }
     suspend fun setEpgNoticeShown(shown: Boolean) = store.edit { it[K.epgNoticeShown] = shown }
+    suspend fun setAdultFilterApplied(value: Boolean) = store.edit { it[K.adultFilterApplied] = value }
 
     /** Channel zapping memory (live channel keys; not secret). */
     suspend fun lastChannels(): Pair<String?, String?> = prefs.first().let { it[K.lastChannel] to it[K.previousChannel] }
@@ -122,6 +124,7 @@ class SettingsRepository @Inject constructor(
         autoplayNext = this[K.autoplayNext] ?: true,
         showOriginalNames = this[K.showOriginalNames] ?: false,
         invertChannelKeys = this[K.invertChannelKeys] ?: false,
+        hideAdult = this[K.hideAdult] ?: true,
     )
 
     private fun Preferences.toState() = AppState(
@@ -130,6 +133,7 @@ class SettingsRepository @Inject constructor(
         epgStatus = enumOr(this[K.epgStatus], EpgStatus.UNKNOWN),
         epgNoticeShown = this[K.epgNoticeShown] ?: false,
         playlistEntryCount = this[K.playlistEntryCount] ?: 0,
+        adultFilterApplied = this[K.adultFilterApplied] ?: false,
     )
 
     private inline fun <reified E : Enum<E>> enumOr(name: String?, default: E): E =
@@ -154,9 +158,11 @@ class SettingsRepository @Inject constructor(
         val autoplayNext = booleanPreferencesKey("autoplay_next")
         val showOriginalNames = booleanPreferencesKey("show_original_names")
         val invertChannelKeys = booleanPreferencesKey("invert_channel_keys")
+        val hideAdult = booleanPreferencesKey("hide_adult")
 
         val lastPlaylistRefresh = longPreferencesKey("last_playlist_refresh")
         val playlistEntryCount = intPreferencesKey("playlist_entry_count")
+        val adultFilterApplied = booleanPreferencesKey("adult_filter_applied")
         val lastEpgRefresh = longPreferencesKey("last_epg_refresh")
         val epgStatus = stringPreferencesKey("epg_status")
         val epgNoticeShown = booleanPreferencesKey("epg_notice_shown")

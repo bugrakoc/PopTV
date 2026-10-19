@@ -40,6 +40,8 @@ PopTV does not include any content or playlists. It plays what your own provider
 - Category sidebar (Favorites, Recently watched, All channels, then the playlist groups), channel logos,
   channel numbers (`tvg-chno`, otherwise list order), and now/next with a progress bar.
 - Hold OK on a channel to add or remove it as a favorite. Hold OK on a category to hide it.
+- Adult categories ("FOR ADULTS", "XXX", "+18", ...) are hidden by default; Settings › Content › Hide adult
+  content turns this off.
 - While watching:
   - **Up/Down** or **Channel ±** zaps between channels (the direction can be inverted in Settings).
   - **OK/Left/Right** opens the channel list overlay.

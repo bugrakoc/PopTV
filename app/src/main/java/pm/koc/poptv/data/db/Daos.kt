@@ -158,8 +158,14 @@ interface StreamDao {
     @Query("SELECT groupTitle, detectedType, COUNT(*) AS count, MIN(sortIndex) AS firstIndex FROM streams GROUP BY groupTitle, detectedType")
     suspend fun groupSummaries(): List<GroupSummary>
 
-    @Query("UPDATE streams SET type = :type, hidden = 0 WHERE groupTitle = :group")
-    suspend fun setGroupType(group: String, type: ContentType)
+    @Query("UPDATE streams SET type = :type, hidden = :hidden WHERE groupTitle = :group")
+    suspend fun setGroupType(group: String, type: ContentType, hidden: Boolean)
+
+    @Query("UPDATE streams SET hidden = :hidden WHERE groupTitle = :group")
+    suspend fun setGroupHidden(group: String, hidden: Boolean)
+
+    @Query("SELECT DISTINCT groupTitle FROM streams")
+    suspend fun groupTitles(): List<String>
 
     @Query("UPDATE streams SET type = detectedType, hidden = :hidden WHERE groupTitle = :group")
     suspend fun resetGroup(group: String, hidden: Boolean)

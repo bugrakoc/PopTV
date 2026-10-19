@@ -22,6 +22,8 @@ data class AppSettings(
     val showOriginalNames: Boolean = false,
     /** false: D-pad down = next channel (list order); true: D-pad up = next channel. */
     val invertChannelKeys: Boolean = false,
+    /** Hides adult categories ([pm.koc.poptv.domain.AdultContent]) everywhere. */
+    val hideAdult: Boolean = true,
 ) {
     companion object {
         const val DEFAULT_USER_AGENT = "VLC/3.0.21 LibVLC/3.0.21"
@@ -38,4 +40,6 @@ data class AppState(
     val epgStatus: EpgStatus = EpgStatus.UNKNOWN,
     val epgNoticeShown: Boolean = false,
     val playlistEntryCount: Int = 0,
+    /** The adult filter the library rows currently reflect (libraries from before the setting show all). */
+    val adultFilterApplied: Boolean = false,
 )

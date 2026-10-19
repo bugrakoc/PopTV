@@ -286,7 +286,7 @@
 
     <!-- About -->
     <string name="about_version">Sürüm %1$s (%2$d)</string>
-    <string name="about_description">PopTV, kendi IPTV sağlayıcınızın M3U listelerini oynatır. Herhangi bir içerik sağlamaz.</string>
+    <string name="disclaimer">PopTV yalnızca bir oynatıcıdır. Herhangi bir kanal, film veya dizi sağlamaz: bir IPTV sağlayıcısından aboneliğiniz olması gerekir.</string>
     <string name="about_tmdb_notice">Bu ürün TMDB API\'sini kullanır ancak TMDB tarafından onaylanmamış veya sertifikalandırılmamıştır.</string>
     <string name="about_licenses">Açık kaynak lisansları</string>
     <plurals name="settings_epg_loading">

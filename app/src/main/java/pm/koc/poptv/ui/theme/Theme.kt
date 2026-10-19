@@ -1,6 +1,8 @@
 package pm.koc.poptv.ui.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.tv.material3.LocalContentColor
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.darkColorScheme
 
@@ -28,9 +30,8 @@ fun PopTVTheme(content: @Composable () -> Unit) {
         error = ErrorRed,
         scrim = Scrim,
     )
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    MaterialTheme(colorScheme = colorScheme, typography = Typography) {
+        // TV Material's default content color is black; text drawn outside a Surface must still be readable.
+        CompositionLocalProvider(LocalContentColor provides OnBackground, content = content)
+    }
 }

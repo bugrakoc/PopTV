@@ -288,7 +288,7 @@
 
     <!-- About -->
     <string name="about_version">Version %1$s (%2$d)</string>
-    <string name="about_description">PopTV plays M3U playlists from your own IPTV provider. It does not provide any content.</string>
+    <string name="disclaimer">PopTV is only a player. It does not provide any channels, movies or shows: you need a subscription from an IPTV provider.</string>
     <string name="about_tmdb_notice">This product uses the TMDB API but is not endorsed or certified by TMDB.</string>
     <string name="about_licenses">Open-source licenses</string>
     <plurals name="settings_epg_loading">

@@ -4,13 +4,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -86,9 +88,10 @@ private fun DetailHeader(
     metadata: Metadata?,
     year: Int?,
     extraLine: String?,
-    buttons: @Composable RowScope.() -> Unit,
+    buttons: @Composable FlowRowScope.() -> Unit,
 ) {
-    Box(Modifier.fillMaxWidth().height(400.dp)) {
+    // At least 400dp tall, taller when the title, overview or wrapped buttons need it.
+    Box(Modifier.fillMaxWidth().heightIn(min = 400.dp)) {
         val backdrop = metadata?.backdropUrl ?: metadata?.posterUrl ?: poster
         if (backdrop != null) {
             AsyncImage(
@@ -96,15 +99,15 @@ private fun DetailHeader(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 alpha = 0.45f,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.matchParentSize(),
             )
         }
         Box(
             Modifier
-                .fillMaxSize()
+                .matchParentSize()
                 .background(Brush.horizontalGradient(listOf(Background, Background.copy(alpha = 0.85f), Color.Transparent))),
         )
-        Box(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color.Transparent, Background), startY = 250f)))
+        Box(Modifier.matchParentSize().background(Brush.verticalGradient(listOf(Color.Transparent, Background), startY = 250f)))
         Row(
             Modifier.padding(horizontal = ScreenHorizontalPadding, vertical = 32.dp),
             horizontalArrangement = Arrangement.spacedBy(32.dp),
@@ -145,7 +148,11 @@ private fun DetailHeader(
                     )
                 }
                 Spacer(Modifier.height(20.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically, content = buttons)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    content = buttons,
+                )
             }
         }
     }

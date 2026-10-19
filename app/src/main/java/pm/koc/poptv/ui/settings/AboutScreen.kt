@@ -23,7 +23,7 @@ fun AboutScreen() {
         title = stringResource(R.string.settings_about),
         subtitle = stringResource(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
     ) {
-        Text(stringResource(R.string.about_description), style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(R.string.disclaimer), style = MaterialTheme.typography.bodyMedium)
         Spacer(Modifier.height(8.dp))
         Text(stringResource(R.string.about_tmdb_notice), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(16.dp))

@@ -92,6 +92,12 @@ fun LoginScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    stringResource(R.string.disclaimer),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             Column(Modifier.width(560.dp)) {
                 when (val s = state) {

@@ -39,6 +39,7 @@ import pm.koc.poptv.data.repo.LiveContext
 import pm.koc.poptv.ui.components.ConfirmDialog
 import pm.koc.poptv.ui.components.EmptyState
 import pm.koc.poptv.ui.components.safeRequestFocus
+import pm.koc.poptv.ui.menu.StreamMenu
 
 /**
  * Category sidebar + channel list. Moving through categories updates the list (debounced); long-press on a
@@ -63,6 +64,7 @@ fun ChannelBrowser(
 
     var lastFocusedChannel by rememberSaveable { mutableStateOf(initialFocusKey ?: currentKey) }
     var hideCandidate by remember { mutableStateOf<String?>(null) }
+    var channelMenu by remember { mutableStateOf<StreamEntity?>(null) }
     val channelFocus = remember { FocusRequester() }
     val categoryFocus = remember { FocusRequester() }
     val categoryState = rememberLazyListState()
@@ -152,7 +154,7 @@ fun ChannelBrowser(
                                 isFavorite = stream.key in favorites,
                                 isCurrent = stream.key == currentKey,
                                 onClick = { onChannelClick(stream, selected) },
-                                onLongClick = { viewModel.toggleFavorite(stream) },
+                                onLongClick = { channelMenu = stream },
                                 loadProgrammes = viewModel::nowNext,
                                 modifier = Modifier
                                     .then(if (isTarget || (lastFocusedChannel == null && index == 0)) Modifier.focusRequester(channelFocus) else Modifier)
@@ -182,6 +184,16 @@ fun ChannelBrowser(
         val key = currentKey ?: return@LaunchedEffect
         val idx = channels.itemSnapshotList.items.indexOfFirst { it.key == key }
         if (idx > 0 && channelState.firstVisibleItemIndex == 0) channelState.scrollToItem((idx - 2).coerceAtLeast(0))
+    }
+
+    channelMenu?.let { stream ->
+        StreamMenu(
+            stream = stream,
+            title = if (original) stream.name else stream.displayName,
+            onDismiss = { channelMenu = null },
+            onPlay = { onChannelClick(stream, selected) },
+            onHideCategory = viewModel::hideCategory,
+        )
     }
 
     hideCandidate?.let { group ->

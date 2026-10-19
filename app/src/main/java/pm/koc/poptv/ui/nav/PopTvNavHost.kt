@@ -70,6 +70,7 @@ fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewMod
                 type = ContentType.MOVIE,
                 onOpenMovie = { nav.navigate(MovieDetailRoute(it)) },
                 onOpenShow = { nav.navigate(ShowDetailRoute(it)) },
+                onPlay = { key, startOver -> nav.navigate(PlayerRoute(key, startOver = startOver)) { launchSingleTop = true } },
                 onSearch = { nav.navigate(SearchRoute) },
             )
         }
@@ -78,6 +79,7 @@ fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewMod
                 type = ContentType.SERIES,
                 onOpenMovie = { nav.navigate(MovieDetailRoute(it)) },
                 onOpenShow = { nav.navigate(ShowDetailRoute(it)) },
+                onPlay = { key, startOver -> nav.navigate(PlayerRoute(key, startOver = startOver)) { launchSingleTop = true } },
                 onSearch = { nav.navigate(SearchRoute) },
             )
         }
@@ -95,6 +97,7 @@ fun PopTvNavHost(prefillUrl: String?, mainViewModel: MainViewModel = hiltViewMod
                 onPlayChannel = { stream, context -> nav.navigate(PlayerRoute(stream.key, context)) { launchSingleTop = true } },
                 onOpenMovie = { nav.navigate(MovieDetailRoute(it)) },
                 onOpenShow = { nav.navigate(ShowDetailRoute(it)) },
+                onPlay = { key, startOver -> nav.navigate(PlayerRoute(key, startOver = startOver)) { launchSingleTop = true } },
             )
         }
         composable<SettingsRoute> {

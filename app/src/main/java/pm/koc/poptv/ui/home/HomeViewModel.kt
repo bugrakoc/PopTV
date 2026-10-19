@@ -61,4 +61,8 @@ class HomeViewModel @Inject constructor(
     fun setWatched(entry: ContinueEntry, watched: Boolean) {
         viewModelScope.launch { playback.setWatched(entry.stream, watched) }
     }
+
+    fun removeFromRecent(stream: StreamEntity) {
+        viewModelScope.launch { library.removeFromRecent(stream.key) }
+    }
 }

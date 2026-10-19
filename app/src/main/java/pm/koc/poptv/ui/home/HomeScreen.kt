@@ -24,11 +24,15 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarViewDay
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Tv
+import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,13 +55,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.Border
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.Icon
-import androidx.tv.material3.ListItem
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import kotlinx.coroutines.delay
 import pm.koc.poptv.R
+import pm.koc.poptv.data.db.ShowEntity
 import pm.koc.poptv.data.db.StreamEntity
 import pm.koc.poptv.data.repo.ContinueEntry
 import pm.koc.poptv.data.repo.EpgRefreshState
@@ -66,10 +70,13 @@ import pm.koc.poptv.data.repo.LiveContext
 import pm.koc.poptv.domain.ContentType
 import pm.koc.poptv.ui.components.ChannelCard
 import pm.koc.poptv.ui.components.ConfirmDialog
+import pm.koc.poptv.ui.components.ContextMenu
+import pm.koc.poptv.ui.components.MenuAction
 import pm.koc.poptv.ui.components.PosterCard
 import pm.koc.poptv.ui.components.ScreenHorizontalPadding
-import pm.koc.poptv.ui.components.TvDialog
 import pm.koc.poptv.ui.components.safeRequestFocus
+import pm.koc.poptv.ui.menu.ShowMenu
+import pm.koc.poptv.ui.menu.StreamMenu
 
 @Composable
 fun HomeScreen(
@@ -95,7 +102,7 @@ fun HomeScreen(
     val showEpgNotice by viewModel.showEpgNotice.collectAsStateWithLifecycle()
 
     var confirmExit by rememberSaveable { mutableStateOf(false) }
-    var menuFor by remember { mutableStateOf<ContinueEntry?>(null) }
+    var menuFor by remember { mutableStateOf<HomeMenu?>(null) }
     var epgNoticeVisible by rememberSaveable { mutableStateOf(false) }
     var lastFocused by rememberSaveable { mutableStateOf<String?>(null) }
     val activity = LocalActivity.current
@@ -183,7 +190,7 @@ fun HomeScreen(
                 subtitle = subtitle,
                 progress = entry.progress,
                 onClick = { onPlay(s.key, null, false) },
-                onLongClick = { menuFor = entry },
+                onLongClick = { menuFor = HomeMenu.Continue(entry) },
                 modifier = Modifier.track("continue:${s.key}"),
             )
         }
@@ -193,6 +200,7 @@ fun HomeScreen(
                 logo = s.logo,
                 subtitle = s.number.takeIf { it > 0 }?.toString(),
                 onClick = { onPlay(s.key, LiveContext.FAVORITES, false) },
+                onLongClick = { menuFor = HomeMenu.Channel(s, LiveContext.FAVORITES, recent = false) },
                 modifier = Modifier.track("fav:${s.key}"),
             )
         }
@@ -202,14 +210,28 @@ fun HomeScreen(
                 logo = s.logo,
                 subtitle = s.number.takeIf { it > 0 }?.toString(),
                 onClick = { onPlay(s.key, LiveContext.ALL, false) },
+                onLongClick = { menuFor = HomeMenu.Channel(s, LiveContext.ALL, recent = true) },
                 modifier = Modifier.track("recent:${s.key}"),
             )
         }
         row(this, "fav-movies", R.string.home_favorite_movies, favoriteMovies, { it.key }) { s ->
-            PosterCard(title = title(s), imageUrl = s.logo, subtitle = s.year?.toString(), onClick = { onOpenMovie(s.key) }, modifier = Modifier.track("favm:${s.key}"))
+            PosterCard(
+                title = title(s),
+                imageUrl = s.logo,
+                subtitle = s.year?.toString(),
+                onClick = { onOpenMovie(s.key) },
+                onLongClick = { menuFor = HomeMenu.Movie(s) },
+                modifier = Modifier.track("favm:${s.key}"),
+            )
         }
         row(this, "fav-shows", R.string.home_favorite_shows, favoriteShows, { it.seriesKey }) { sh ->
-            PosterCard(title = sh.name, imageUrl = sh.logo, onClick = { onOpenShow(sh.seriesKey) }, modifier = Modifier.track("favs:${sh.seriesKey}"))
+            PosterCard(
+                title = sh.name,
+                imageUrl = sh.logo,
+                onClick = { onOpenShow(sh.seriesKey) },
+                onLongClick = { menuFor = HomeMenu.Show(sh) },
+                modifier = Modifier.track("favs:${sh.seriesKey}"),
+            )
         }
         if (continueWatching.isEmpty() && favoriteChannels.isEmpty() && recentChannels.isEmpty()) {
             item(key = "hint") {
@@ -231,19 +253,45 @@ fun HomeScreen(
         }
     }
 
-    menuFor?.let { entry ->
-        val s = entry.stream
-        TvDialog(onDismissRequest = { menuFor = null }, title = if (s.type == ContentType.SERIES) s.seriesName ?: s.displayName else s.displayName) {
-            val first = remember { FocusRequester() }
-            ListItem(selected = false, onClick = { menuFor = null; onPlay(s.key, null, false) }, headlineContent = { Text(stringResource(R.string.player_play)) }, modifier = Modifier.focusRequester(first))
-            ListItem(selected = false, onClick = { menuFor = null; onPlay(s.key, null, true) }, headlineContent = { Text(stringResource(R.string.detail_start_over)) })
-            if (s.type == ContentType.SERIES && s.seriesKey != null) {
-                ListItem(selected = false, onClick = { menuFor = null; onOpenShow(s.seriesKey) }, headlineContent = { Text(stringResource(R.string.home_go_to_show)) })
-            }
-            ListItem(selected = false, onClick = { viewModel.setWatched(entry, true); menuFor = null }, headlineContent = { Text(stringResource(R.string.detail_mark_watched)) })
-            ListItem(selected = false, onClick = { viewModel.removeFromContinue(entry); menuFor = null }, headlineContent = { Text(stringResource(R.string.home_remove_from_continue)) })
-            LaunchedEffect(Unit) { first.safeRequestFocus() }
+    when (val menu = menuFor) {
+        null -> Unit
+        is HomeMenu.Continue -> {
+            val entry = menu.entry
+            val s = entry.stream
+            val isEpisode = s.type == ContentType.SERIES
+            ContextMenu(
+                title = if (isEpisode) s.seriesName ?: s.displayName else s.displayName,
+                actions = listOfNotNull(
+                    MenuAction(stringResource(R.string.player_play), Icons.Filled.PlayArrow) { onPlay(s.key, null, false) },
+                    MenuAction(stringResource(R.string.detail_start_over), Icons.Filled.Replay) { onPlay(s.key, null, true) },
+                    s.seriesKey?.takeIf { isEpisode }?.let { key ->
+                        MenuAction(stringResource(R.string.home_go_to_show), Icons.Filled.Tv) { onOpenShow(key) }
+                    },
+                    MenuAction(stringResource(R.string.detail_mark_watched), Icons.Filled.Visibility) { viewModel.setWatched(entry, true) },
+                    MenuAction(stringResource(R.string.home_remove_from_continue), Icons.Filled.Close) { viewModel.removeFromContinue(entry) },
+                ),
+                onDismiss = { menuFor = null },
+            )
         }
+        is HomeMenu.Channel -> StreamMenu(
+            stream = menu.stream,
+            title = title(menu.stream),
+            onDismiss = { menuFor = null },
+            onPlay = { onPlay(menu.stream.key, menu.context, false) },
+            extraActions = if (menu.recent) {
+                listOf(MenuAction(stringResource(R.string.menu_remove_recent), Icons.Filled.Close) { viewModel.removeFromRecent(menu.stream) })
+            } else {
+                emptyList()
+            },
+        )
+        is HomeMenu.Movie -> StreamMenu(
+            stream = menu.stream,
+            title = title(menu.stream),
+            onDismiss = { menuFor = null },
+            onPlay = { startOver -> onPlay(menu.stream.key, null, startOver) },
+            onOpenDetails = { onOpenMovie(menu.stream.key) },
+        )
+        is HomeMenu.Show -> ShowMenu(menu.show, onDismiss = { menuFor = null }, onOpen = { onOpenShow(menu.show.seriesKey) })
     }
 
     if (confirmExit) {
@@ -255,6 +303,14 @@ fun HomeScreen(
             onDismiss = { confirmExit = false },
         )
     }
+}
+
+/** What a long press on the home screen opened a menu for. */
+private sealed interface HomeMenu {
+    data class Continue(val entry: ContinueEntry) : HomeMenu
+    data class Channel(val stream: StreamEntity, val context: String, val recent: Boolean) : HomeMenu
+    data class Movie(val stream: StreamEntity) : HomeMenu
+    data class Show(val show: ShowEntity) : HomeMenu
 }
 
 /** A titled horizontal row; nothing is emitted for an empty list. */

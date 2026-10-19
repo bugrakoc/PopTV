@@ -74,7 +74,7 @@
     <string name="live_all_channels">Tüm kanallar</string>
     <string name="live_no_channels">Burada kanal yok</string>
     <string name="live_no_favorites">Henüz favori kanal yok</string>
-    <string name="live_favorites_hint">Bir kanalı favorilere eklemek için Tamam tuşunu basılı tutun.</string>
+    <string name="live_favorites_hint">Bir kanalda Tamam tuşunu basılı tutup Favorilere ekle\'yi seçin.</string>
     <string name="live_now_playing">Şu an oynatılıyor</string>
     <string name="live_hide_category_title">“%1$s” gizlensin mi?</string>
     <string name="live_hide_category_message">Ayarlar › Kategoriler bölümünden tekrar gösterebilirsiniz.</string>
@@ -191,6 +191,9 @@
     <string name="home_favorite_movies">Favori filmler</string>
     <string name="home_favorite_shows">Favori diziler</string>
     <string name="home_next_episode">Sonraki bölüm</string>
+    <string name="menu_details">Ayrıntılar</string>
+    <string name="menu_hide_category">Kategoriyi gizle</string>
+    <string name="menu_remove_recent">Son izlenenlerden kaldır</string>
     <string name="home_go_to_show">Diziye git</string>
     <string name="home_remove_from_continue">İzlemeye devam et listesinden kaldır</string>
     <string name="home_empty_hint">Bir şeyler izlemeye başlayın. Favorileriniz, son izlediğiniz kanallar ve yarım kalan videolar burada görünecek.</string>

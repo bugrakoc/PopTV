@@ -1,6 +1,7 @@
 package pm.koc.poptv.ui.vod
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -39,6 +41,8 @@ import androidx.tv.material3.Icon
 import androidx.tv.material3.IconButton
 import kotlinx.coroutines.delay
 import pm.koc.poptv.R
+import pm.koc.poptv.data.db.ShowEntity
+import pm.koc.poptv.data.db.StreamEntity
 import pm.koc.poptv.data.repo.SortOrder
 import pm.koc.poptv.domain.ContentType
 import pm.koc.poptv.ui.components.Choice
@@ -48,8 +52,8 @@ import pm.koc.poptv.ui.components.PosterCard
 import pm.koc.poptv.ui.components.ScreenScaffold
 import pm.koc.poptv.ui.components.safeRequestFocus
 import pm.koc.poptv.ui.live.CategoryItem
-import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.res.pluralStringResource
+import pm.koc.poptv.ui.menu.ShowMenu
+import pm.koc.poptv.ui.menu.StreamMenu
 
 /** Movies (type MOVIE) or TV shows (type SERIES) poster grid with a category sidebar. */
 @Composable
@@ -57,6 +61,7 @@ fun VodBrowseScreen(
     type: ContentType,
     onOpenMovie: (String) -> Unit,
     onOpenShow: (String) -> Unit,
+    onPlay: (streamKey: String, startOver: Boolean) -> Unit,
     onSearch: () -> Unit,
     viewModel: VodBrowseViewModel = hiltViewModel(),
 ) {
@@ -67,6 +72,8 @@ fun VodBrowseScreen(
     val original by viewModel.showOriginalNames.collectAsStateWithLifecycle()
     var sortDialog by rememberSaveable { mutableStateOf(false) }
     var lastFocused by rememberSaveable { mutableStateOf<String?>(null) }
+    var movieMenu by remember { mutableStateOf<StreamEntity?>(null) }
+    var showMenu by remember { mutableStateOf<ShowEntity?>(null) }
     val gridFocus = remember { FocusRequester() }
     val categoryFocus = remember { FocusRequester() }
     val gridState = rememberLazyGridState()
@@ -136,6 +143,7 @@ fun VodBrowseScreen(
                                         imageUrl = m.logo,
                                         subtitle = m.year?.toString(),
                                         onClick = { onOpenMovie(m.key) },
+                                        onLongClick = { movieMenu = m },
                                         width = 150.dp,
                                         modifier = Modifier
                                             .then(if (m.key == lastFocused || (lastFocused == null && i == 0)) Modifier.focusRequester(gridFocus) else Modifier)
@@ -169,6 +177,7 @@ fun VodBrowseScreen(
                                         // 0 for Xtream shows whose episodes have not been loaded yet
                                         subtitle = if (show.episodeCount == 0) null else pluralStringResource(R.plurals.episodes_count, show.episodeCount, show.episodeCount),
                                         onClick = { onOpenShow(show.seriesKey) },
+                                        onLongClick = { showMenu = show },
                                         width = 150.dp,
                                         modifier = Modifier
                                             .then(if (show.seriesKey == lastFocused || (lastFocused == null && i == 0)) Modifier.focusRequester(gridFocus) else Modifier)
@@ -190,6 +199,17 @@ fun VodBrowseScreen(
             if (ok) return@LaunchedEffect
         }
     }
+
+    movieMenu?.let { m ->
+        StreamMenu(
+            stream = m,
+            title = if (original) m.name else m.displayName,
+            onDismiss = { movieMenu = null },
+            onPlay = { startOver -> onPlay(m.key, startOver) },
+            onOpenDetails = { onOpenMovie(m.key) },
+        )
+    }
+    showMenu?.let { sh -> ShowMenu(sh, onDismiss = { showMenu = null }, onOpen = { onOpenShow(sh.seriesKey) }) }
 
     if (sortDialog) {
         ChoiceDialog(

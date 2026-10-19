@@ -337,6 +337,9 @@ interface HistoryDao {
     @Query("DELETE FROM watch_history WHERE kind = :kind AND `key` NOT IN (SELECT `key` FROM watch_history WHERE kind = :kind ORDER BY watchedAt DESC LIMIT :keep)")
     suspend fun trim(kind: ItemKind, keep: Int)
 
+    @Query("DELETE FROM watch_history WHERE `key` = :key")
+    suspend fun delete(key: String)
+
     @Query("DELETE FROM watch_history")
     suspend fun clear()
 }

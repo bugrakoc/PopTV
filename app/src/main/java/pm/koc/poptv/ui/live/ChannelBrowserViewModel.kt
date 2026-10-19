@@ -88,10 +88,6 @@ class ChannelBrowserViewModel @Inject constructor(
         return list
     }
 
-    fun toggleFavorite(stream: StreamEntity) {
-        viewModelScope.launch { library.toggleFavorite(stream.key, ItemKind.CHANNEL) }
-    }
-
     fun hideCategory(group: String) {
         viewModelScope.launch {
             categoryRepository.hide(group)

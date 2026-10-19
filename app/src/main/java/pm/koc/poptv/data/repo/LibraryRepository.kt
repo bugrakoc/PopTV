@@ -91,6 +91,11 @@ class LibraryRepository @Inject constructor(
 
     fun recentChannels(limit: Int = 20): Flow<List<StreamEntity>> = db.historyDao().observeRecentChannels(limit)
 
+    suspend fun removeFromRecent(key: String) {
+        db.historyDao().delete(key)
+        recentSnapshot = null
+    }
+
     suspend fun recordChannelWatched(key: String) {
         db.historyDao().upsert(HistoryEntity(key, ItemKind.CHANNEL, System.currentTimeMillis()))
         db.historyDao().trim(ItemKind.CHANNEL, keep = 50)

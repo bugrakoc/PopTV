@@ -22,10 +22,13 @@ import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRestorer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -38,22 +41,28 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import pm.koc.poptv.R
 import pm.koc.poptv.core.SearchQuery
+import pm.koc.poptv.data.db.ShowEntity
 import pm.koc.poptv.data.db.StreamEntity
 import pm.koc.poptv.data.repo.LiveContext
+import pm.koc.poptv.domain.ContentType
 import pm.koc.poptv.ui.components.ChannelCard
 import pm.koc.poptv.ui.components.EmptyState
 import pm.koc.poptv.ui.components.PosterCard
 import pm.koc.poptv.ui.components.ScreenScaffold
 import pm.koc.poptv.ui.components.TvTextField
-import androidx.compose.ui.platform.LocalConfiguration
+import pm.koc.poptv.ui.menu.ShowMenu
+import pm.koc.poptv.ui.menu.StreamMenu
 
 @Composable
 fun SearchScreen(
     onPlayChannel: (StreamEntity, String) -> Unit,
     onOpenMovie: (String) -> Unit,
     onOpenShow: (String) -> Unit,
+    onPlay: (streamKey: String, startOver: Boolean) -> Unit,
     viewModel: SearchViewModel = hiltViewModel(),
 ) {
+    var streamMenu by remember { mutableStateOf<StreamEntity?>(null) }
+    var showMenu by remember { mutableStateOf<ShowEntity?>(null) }
     val query by viewModel.query.collectAsStateWithLifecycle()
     val results by viewModel.results.collectAsStateWithLifecycle()
     val original by viewModel.showOriginalNames.collectAsStateWithLifecycle()
@@ -111,6 +120,7 @@ fun SearchScreen(
                                 logo = s.logo,
                                 subtitle = s.groupTitle,
                                 onClick = { onPlayChannel(s, LiveContext.ALL) },
+                                onLongClick = { streamMenu = s },
                             )
                         }
                     }
@@ -118,20 +128,37 @@ fun SearchScreen(
                 if (r.movies.isNotEmpty()) item(key = "movies") {
                     ResultRow(stringResource(R.string.search_movies, r.movies.size)) {
                         items(r.movies, key = { it.key }) { s ->
-                            PosterCard(title = title(s), imageUrl = s.logo, subtitle = s.year?.toString(), onClick = { onOpenMovie(s.key) })
+                            PosterCard(
+                                title = title(s),
+                                imageUrl = s.logo,
+                                subtitle = s.year?.toString(),
+                                onClick = { onOpenMovie(s.key) },
+                                onLongClick = { streamMenu = s },
+                            )
                         }
                     }
                 }
                 if (r.shows.isNotEmpty()) item(key = "shows") {
                     ResultRow(stringResource(R.string.search_shows, r.shows.size)) {
                         items(r.shows, key = { it.seriesKey }) { sh ->
-                            PosterCard(title = sh.name, imageUrl = sh.logo, onClick = { onOpenShow(sh.seriesKey) })
+                            PosterCard(title = sh.name, imageUrl = sh.logo, onClick = { onOpenShow(sh.seriesKey) }, onLongClick = { showMenu = sh })
                         }
                     }
                 }
             }
         }
     }
+
+    streamMenu?.let { s ->
+        StreamMenu(
+            stream = s,
+            title = title(s),
+            onDismiss = { streamMenu = null },
+            onPlay = { startOver -> if (s.type == ContentType.LIVE) onPlayChannel(s, LiveContext.ALL) else onPlay(s.key, startOver) },
+            onOpenDetails = if (s.type == ContentType.MOVIE) ({ onOpenMovie(s.key) }) else null,
+        )
+    }
+    showMenu?.let { sh -> ShowMenu(sh, onDismiss = { showMenu = null }, onOpen = { onOpenShow(sh.seriesKey) }) }
 }
 
 @Composable

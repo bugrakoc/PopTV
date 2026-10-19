@@ -45,6 +45,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -56,7 +57,6 @@ import androidx.tv.material3.ButtonDefaults
 import androidx.tv.material3.ClickableSurfaceDefaults
 import androidx.tv.material3.FilterChip
 import androidx.tv.material3.Icon
-import androidx.tv.material3.ListItem
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Surface
@@ -67,18 +67,18 @@ import pm.koc.poptv.R
 import pm.koc.poptv.data.db.StreamEntity
 import pm.koc.poptv.data.repo.Metadata
 import pm.koc.poptv.domain.ResumePolicy
+import pm.koc.poptv.ui.components.ContextMenu
 import pm.koc.poptv.ui.components.EmptyState
+import pm.koc.poptv.ui.components.MenuAction
 import pm.koc.poptv.ui.components.ProgressBar
 import pm.koc.poptv.ui.components.RemoteImage
 import pm.koc.poptv.ui.components.ScreenHorizontalPadding
-import pm.koc.poptv.ui.components.TvDialog
 import pm.koc.poptv.ui.components.formatPosition
 import pm.koc.poptv.ui.components.localizedMessage
 import pm.koc.poptv.ui.components.safeRequestFocus
 import pm.koc.poptv.ui.live.listItemColors
 import pm.koc.poptv.ui.theme.Background
 import pm.koc.poptv.ui.theme.SuccessGreen
-import androidx.compose.ui.platform.LocalConfiguration
 
 /** Backdrop + poster + text block shared by movie and show details. */
 @Composable
@@ -341,24 +341,25 @@ fun ShowDetailScreen(
     }
 
     menuFor?.let { ep ->
-        TvDialog(onDismissRequest = { menuFor = null }, title = episodeLabel(ep.stream)) {
-            val first = remember { FocusRequester() }
-            ListItem(selected = false, onClick = { menuFor = null; onPlay(ep.stream.key, true) }, headlineContent = { Text(stringResource(R.string.detail_start_over)) }, modifier = Modifier.focusRequester(first))
-            ListItem(
-                selected = false,
-                onClick = { viewModel.setWatched(ep.stream, !ep.watched); menuFor = null },
-                headlineContent = { Text(stringResource(if (ep.watched) R.string.detail_mark_unwatched else R.string.detail_mark_watched)) },
-            )
-            if (season != null) {
-                val allWatched = season.episodes.all { it.watched }
-                ListItem(
-                    selected = false,
-                    onClick = { viewModel.setSeasonWatched(season, !allWatched); menuFor = null },
-                    headlineContent = { Text(stringResource(if (allWatched) R.string.detail_season_unwatched else R.string.detail_season_watched)) },
-                )
-            }
-            LaunchedEffect(Unit) { first.safeRequestFocus() }
-        }
+        val allWatched = season?.episodes?.all { it.watched } ?: false
+        ContextMenu(
+            title = episodeLabel(ep.stream),
+            actions = listOfNotNull(
+                MenuAction(stringResource(R.string.player_play), Icons.Filled.PlayArrow) { onPlay(ep.stream.key, false) },
+                MenuAction(stringResource(R.string.detail_start_over), Icons.Filled.Replay) { onPlay(ep.stream.key, true) },
+                MenuAction(
+                    stringResource(if (ep.watched) R.string.detail_mark_unwatched else R.string.detail_mark_watched),
+                    if (ep.watched) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                ) { viewModel.setWatched(ep.stream, !ep.watched) },
+                season?.let {
+                    MenuAction(
+                        stringResource(if (allWatched) R.string.detail_season_unwatched else R.string.detail_season_watched),
+                        Icons.Filled.CheckCircle,
+                    ) { viewModel.setSeasonWatched(it, !allWatched) }
+                },
+            ),
+            onDismiss = { menuFor = null },
+        )
     }
 }
 

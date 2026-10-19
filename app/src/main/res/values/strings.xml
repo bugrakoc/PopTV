@@ -76,7 +76,7 @@
     <string name="live_all_channels">All channels</string>
     <string name="live_no_channels">No channels here</string>
     <string name="live_no_favorites">No favorite channels yet</string>
-    <string name="live_favorites_hint">Press and hold OK on a channel to add it to your favorites.</string>
+    <string name="live_favorites_hint">Press and hold OK on a channel, then choose Add to favorites.</string>
     <string name="live_now_playing">Now playing</string>
     <string name="live_hide_category_title">Hide “%1$s”?</string>
     <string name="live_hide_category_message">You can show it again in Settings › Categories.</string>
@@ -193,6 +193,9 @@
     <string name="home_favorite_movies">Favorite movies</string>
     <string name="home_favorite_shows">Favorite shows</string>
     <string name="home_next_episode">Next episode</string>
+    <string name="menu_details">Details</string>
+    <string name="menu_hide_category">Hide category</string>
+    <string name="menu_remove_recent">Remove from recently watched</string>
     <string name="home_go_to_show">Go to show</string>
     <string name="home_remove_from_continue">Remove from Continue watching</string>
     <string name="home_empty_hint">Start watching something. Your favorites, recently watched channels and unfinished videos will appear here.</string>

@@ -54,4 +54,12 @@ class XtreamAccountTest {
     fun `toString does not leak the password`() {
         assertThat(XtreamAccount("http://h/", "u1", "secret", "ts").toString()).doesNotContain("secret")
     }
+
+    @Test
+    fun `reads the movie id back from a movie url`() {
+        val a = XtreamAccount.fromPlaylistUrl("http://host.example:8080/get.php?username=u1&password=p1")!!
+        assertThat(a.movieId(a.movieUrl("190838", "mkv"))).isEqualTo("190838")
+        assertThat(a.movieId(a.episodeUrl("190838", "mkv"))).isNull()
+        assertThat(a.movieId("http://other.example/movie/u1/p1/1.mkv")).isNull()
+    }
 }

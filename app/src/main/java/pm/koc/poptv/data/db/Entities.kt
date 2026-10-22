@@ -177,4 +177,6 @@ data class MetadataEntity(
     val genres: String?,
     val cast: String?,
     val fetchedAt: Long,
+    /** ISO 639-1 language the title was made in (TMDB `original_language`). */
+    val originalLanguage: String? = null,
 )

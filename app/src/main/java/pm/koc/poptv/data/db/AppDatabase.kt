@@ -19,7 +19,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
         MetadataEntity::class,
         XtreamSeriesEntity::class,
     ],
-    version = 2,
+    version = 3,
     exportSchema = true,
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -51,6 +51,11 @@ abstract class AppDatabase : RoomDatabase() {
                             "`year` INTEGER, PRIMARY KEY(`seriesId`))",
                     )
                     db.execSQL("CREATE INDEX IF NOT EXISTS `index_xtream_series_seriesKey` ON `xtream_series` (`seriesKey`)")
+                }
+            },
+            object : Migration(2, 3) {
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    db.execSQL("ALTER TABLE `tmdb_cache` ADD COLUMN `originalLanguage` TEXT")
                 }
             },
         )

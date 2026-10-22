@@ -45,10 +45,11 @@ import pm.koc.poptv.ui.components.TextInputDialog
 import pm.koc.poptv.ui.components.localizedMessage
 import pm.koc.poptv.ui.components.requestFocusWithRetry
 import pm.koc.poptv.ui.player.decoderModeLabel
+import pm.koc.poptv.ui.player.languageName
 
 private enum class SettingDialog {
     PLAYLIST_INTERVAL, EPG_INTERVAL, EPG_OFFSET, EPG_URL, DECODER, BUFFER, USER_AGENT,
-    SUBTITLE_SIZE, SUBTITLE_COLOR, TMDB_KEY, LOGOUT,
+    AUDIO_LANGUAGE, FALLBACK_AUDIO_LANGUAGE, SUBTITLES_FOR_ENGLISH, SUBTITLES_FOR_TURKISH, SUBTITLES_FOR_OTHER, SUBTITLE_SIZE, SUBTITLE_COLOR, TMDB_KEY, LOGOUT,
 }
 
 @Composable
@@ -133,6 +134,35 @@ fun SettingsScreen(
             item { SwitchRow(stringResource(R.string.settings_tunneling), stringResource(R.string.settings_tunneling_detail), s.tunneling, viewModel::setTunneling) }
             item { SettingRow(stringResource(R.string.settings_buffer), stringResource(bufferLabel(s.bufferMode))) { dialog = SettingDialog.BUFFER } }
             item { SettingRow(stringResource(R.string.settings_user_agent), s.userAgent) { dialog = SettingDialog.USER_AGENT } }
+            item {
+                SettingRow(
+                    stringResource(R.string.settings_audio_language),
+                    stringResource(R.string.settings_audio_language_value, audioLanguageLabel(s.audioLanguage)),
+                ) { dialog = SettingDialog.AUDIO_LANGUAGE }
+            }
+            if (s.audioLanguage == AppSettings.ORIGINAL) {
+                item {
+                    SettingRow(stringResource(R.string.settings_fallback_audio), languageName(s.fallbackAudioLanguage).orEmpty()) {
+                        dialog = SettingDialog.FALLBACK_AUDIO_LANGUAGE
+                    }
+                }
+            }
+            item {
+                SettingRow(stringResource(R.string.settings_subtitles_for_english), subtitleLabel(s.subtitlesForEnglish)) {
+                    dialog = SettingDialog.SUBTITLES_FOR_ENGLISH
+                }
+            }
+            item {
+                SettingRow(stringResource(R.string.settings_subtitles_for_turkish), subtitleLabel(s.subtitlesForTurkish)) {
+                    dialog = SettingDialog.SUBTITLES_FOR_TURKISH
+                }
+            }
+            item {
+                SettingRow(
+                    stringResource(R.string.settings_subtitles_for_other),
+                    stringResource(R.string.settings_subtitles_for_other_value, subtitleLabel(s.subtitlesForOther)),
+                ) { dialog = SettingDialog.SUBTITLES_FOR_OTHER }
+            }
             item { SettingRow(stringResource(R.string.settings_subtitle_size), stringResource(subtitleSizeLabel(s.subtitleSize))) { dialog = SettingDialog.SUBTITLE_SIZE } }
             item { SettingRow(stringResource(R.string.settings_subtitle_color), stringResource(if (s.subtitleColor == SubtitleColor.WHITE) R.string.color_white else R.string.color_yellow)) { dialog = SettingDialog.SUBTITLE_COLOR } }
             item { SwitchRow(stringResource(R.string.settings_subtitle_background), null, s.subtitleBackground, viewModel::setSubtitleBackground) }
@@ -214,6 +244,43 @@ fun SettingsScreen(
             onDismiss = { dialog = null },
             extraLabel = stringResource(R.string.action_reset),
             onExtra = { viewModel.setUserAgent(AppSettings.DEFAULT_USER_AGENT); dialog = null },
+        )
+        SettingDialog.AUDIO_LANGUAGE -> ChoiceDialog(
+            title = stringResource(R.string.settings_audio_language),
+            choices = listOf(
+                Choice(AppSettings.ORIGINAL, stringResource(R.string.audio_original), stringResource(R.string.audio_original_detail)),
+            ) + languageChoices(),
+            selected = s.audioLanguage,
+            onSelect = { viewModel.setAudioLanguage(it); dialog = null },
+            onDismiss = { dialog = null },
+        )
+        SettingDialog.FALLBACK_AUDIO_LANGUAGE -> ChoiceDialog(
+            title = stringResource(R.string.settings_fallback_audio),
+            choices = languageChoices(),
+            selected = s.fallbackAudioLanguage,
+            onSelect = { viewModel.setFallbackAudioLanguage(it); dialog = null },
+            onDismiss = { dialog = null },
+        )
+        SettingDialog.SUBTITLES_FOR_ENGLISH -> ChoiceDialog(
+            title = stringResource(R.string.settings_subtitles_for_english),
+            choices = subtitleChoices(),
+            selected = s.subtitlesForEnglish,
+            onSelect = { viewModel.setSubtitlesForEnglish(it); dialog = null },
+            onDismiss = { dialog = null },
+        )
+        SettingDialog.SUBTITLES_FOR_TURKISH -> ChoiceDialog(
+            title = stringResource(R.string.settings_subtitles_for_turkish),
+            choices = subtitleChoices(),
+            selected = s.subtitlesForTurkish,
+            onSelect = { viewModel.setSubtitlesForTurkish(it); dialog = null },
+            onDismiss = { dialog = null },
+        )
+        SettingDialog.SUBTITLES_FOR_OTHER -> ChoiceDialog(
+            title = stringResource(R.string.settings_subtitles_for_other),
+            choices = subtitleChoices(),
+            selected = s.subtitlesForOther,
+            onSelect = { viewModel.setSubtitlesForOther(it); dialog = null },
+            onDismiss = { dialog = null },
         )
         SettingDialog.SUBTITLE_SIZE -> ChoiceDialog(
             title = stringResource(R.string.settings_subtitle_size),
@@ -303,6 +370,19 @@ private fun offsetLabel(minutes: Int): String = when {
     minutes % 60 == 0 -> stringResource(R.string.settings_epg_offset_hours, if (minutes > 0) "+${minutes / 60}" else "${minutes / 60}")
     else -> stringResource(R.string.settings_epg_offset_minutes, if (minutes > 0) "+$minutes" else "$minutes")
 }
+
+@Composable
+private fun audioLanguageLabel(code: String): String =
+    if (code == AppSettings.ORIGINAL) stringResource(R.string.audio_original) else languageName(code).orEmpty()
+
+@Composable
+private fun subtitleLabel(code: String): String = languageName(code) ?: stringResource(R.string.settings_off)
+
+@Composable
+private fun subtitleChoices(): List<Choice<String>> = listOf(Choice("", stringResource(R.string.settings_off))) + languageChoices()
+
+private fun languageChoices(): List<Choice<String>> =
+    AppSettings.TRACK_LANGUAGES.map { Choice(it, languageName(it) ?: it) }
 
 private fun bufferLabel(mode: BufferMode): Int = when (mode) {
     BufferMode.SMALL -> R.string.buffer_small

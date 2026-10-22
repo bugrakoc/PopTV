@@ -1,6 +1,7 @@
 package pm.koc.poptv.data.repo
 
 import android.util.Log
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import pm.koc.poptv.BuildConfig
@@ -23,6 +24,8 @@ data class Metadata(
     val year: Int?,
     val genres: List<String>,
     val cast: List<String>,
+    /** ISO 639-1 language the title was made in, e.g. "en", "ja", "tr". */
+    val originalLanguage: String?,
 )
 
 /**
@@ -39,6 +42,8 @@ class MetadataRepository @Inject constructor(
 
     private suspend fun key(): String? = settings.tmdbKey().ifBlank { BuildConfig.TMDB_API_KEY }.takeIf { it.isNotBlank() }
 
+    suspend fun isEnabled(): Boolean = key() != null
+
     private fun language(): String = if (Locale.getDefault().language == "tr") "tr-TR" else "en-US"
 
     suspend fun movie(title: String, year: Int?): Metadata? = lookup("movie", title, year)
@@ -52,12 +57,16 @@ class MetadataRepository @Inject constructor(
         val now = System.currentTimeMillis()
         db.metadataDao().get(cacheKey)?.let { cached ->
             val ttl = if (cached.tmdbId == null) MISS_TTL else HIT_TTL
-            if (now - cached.fetchedAt < ttl) return cached.toMetadata()
+            // Hits cached before the original language was stored are refetched once.
+            val complete = cached.tmdbId == null || cached.originalLanguage != null
+            if (now - cached.fetchedAt < ttl && complete) return cached.toMetadata()
         }
         return try {
             val entity = fetch(apiKey, kind, title, year, lang, cacheKey, now)
             db.metadataDao().upsert(entity)
             entity.toMetadata()
+        } catch (e: CancellationException) {
+            throw e // the player gives up waiting (timeout); not a failed lookup
         } catch (e: AppError.Unauthorized) {
             Log.w(TAG, "TMDB rejected the API key")
             null
@@ -90,6 +99,7 @@ class MetadataRepository @Inject constructor(
                 cacheKey, hit.id, hit.title, overview, image(hit.posterPath, "w500"), image(hit.backdropPath, "w1280"),
                 hit.voteAverage, hit.releaseDate?.take(4)?.toIntOrNull(),
                 details?.genres?.joinToString("|") { it.name }, details?.credits?.cast?.take(8)?.joinToString("|") { it.name }, now,
+                originalLanguage(hit.originalLanguage),
             )
         } else {
             val hit = tmdb.searchTv(apiKey, title, year, lang).results.firstOrNull()
@@ -104,7 +114,43 @@ class MetadataRepository @Inject constructor(
                 cacheKey, hit.id, hit.name, overview, image(hit.posterPath, "w500"), image(hit.backdropPath, "w1280"),
                 hit.voteAverage, hit.firstAirDate?.take(4)?.toIntOrNull(),
                 details?.genres?.joinToString("|") { it.name }, details?.credits?.cast?.take(8)?.joinToString("|") { it.name }, now,
+                originalLanguage(hit.originalLanguage),
             )
+        }
+    }
+
+    /** TMDB uses "cn" for Cantonese (tracks are tagged Chinese) and "xx" for no language. */
+    private fun originalLanguage(code: String?): String? = when (val c = code?.trim()?.lowercase(Locale.ROOT)) {
+        null, "", "xx" -> null
+        "cn" -> "zh"
+        else -> c
+    }
+
+    /**
+     * Original language of a title whose TMDB id another source knows (the Xtream API), cached under
+     * [cacheKey]. [tmdbId] is only called on a cache miss; misses are cached too.
+     */
+    suspend fun originalLanguageById(kind: String, cacheKey: String, tmdbId: suspend () -> Long?): String? {
+        val apiKey = key() ?: return null
+        val now = System.currentTimeMillis()
+        db.metadataDao().get(cacheKey)?.let { cached ->
+            val ttl = if (cached.originalLanguage == null) MISS_TTL else HIT_TTL
+            if (now - cached.fetchedAt < ttl) return cached.originalLanguage
+        }
+        return try {
+            val id = tmdbId()
+            val details = id?.let { if (kind == "movie") tmdb.movieDetails(apiKey, it, "en-US") else tmdb.tvDetails(apiKey, it, "en-US") }
+            val language = originalLanguage(details?.originalLanguage)
+            db.metadataDao().upsert(MetadataEntity(cacheKey, id, null, null, null, null, null, null, null, null, now, language))
+            language
+        } catch (e: CancellationException) {
+            throw e // the player gives up waiting (timeout); not a failed lookup
+        } catch (e: AppError.Unauthorized) {
+            Log.w(TAG, "TMDB rejected the API key")
+            null
+        } catch (e: Exception) {
+            Log.w(TAG, "Original language lookup failed: ${e.javaClass.simpleName}")
+            null
         }
     }
 
@@ -121,6 +167,7 @@ class MetadataRepository @Inject constructor(
         year = year,
         genres = genres?.split('|')?.filter { it.isNotBlank() }.orEmpty(),
         cast = cast?.split('|')?.filter { it.isNotBlank() }.orEmpty(),
+        originalLanguage = originalLanguage,
     )
 
     private companion object {

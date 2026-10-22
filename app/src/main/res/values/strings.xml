@@ -264,6 +264,15 @@
     <string name="buffer_large">Large (fewer interruptions)</string>
     <string name="settings_user_agent">User agent</string>
     <string name="settings_user_agent_help">Some providers block unknown players. The default identifies as VLC.</string>
+    <string name="settings_audio_language">Audio language</string>
+    <string name="settings_audio_language_value">%1$s (movies and series; live TV uses the device language)</string>
+    <string name="settings_fallback_audio">If the original is unknown</string>
+    <string name="audio_original">Original language</string>
+    <string name="audio_original_detail">From TMDB when a key is set, otherwise guessed from the audio tracks</string>
+    <string name="settings_subtitles_for_english">Subtitles for English audio</string>
+    <string name="settings_subtitles_for_turkish">Subtitles for Turkish audio</string>
+    <string name="settings_subtitles_for_other">Subtitles for other languages</string>
+    <string name="settings_subtitles_for_other_value">%1$s (also used when the chosen subtitles are missing)</string>
     <string name="settings_subtitle_size">Subtitle size</string>
     <string name="size_small">Small</string>
     <string name="size_normal">Normal</string>

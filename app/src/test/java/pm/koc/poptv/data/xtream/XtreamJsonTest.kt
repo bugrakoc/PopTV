@@ -89,4 +89,16 @@ class XtreamJsonTest {
         assertThat(ep.title).isEqualTo("Friends S01E02")
         assertThat(ep.url).isEqualTo("http://h/series/u/p/9.mkv")
     }
+
+    @Test
+    fun `reads TMDB ids from vod and series info`() {
+        assertThat(XtreamJson.vodTmdbId(obj("""{"info":{"tmdb_id":"793040"}}"""))).isEqualTo(793040L)
+        assertThat(XtreamJson.vodTmdbId(obj("""{"info":{"tmdb_id":"","tmdb":1396}}"""))).isEqualTo(1396L)
+        assertThat(XtreamJson.vodTmdbId(obj("""{"info":[]}"""))).isNull()
+        assertThat(XtreamJson.seriesTmdbId(obj("""{"info":{"tmdb":"1396"}}"""))).isEqualTo(1396L)
+        // Episode-level ids are TMDB episode ids, not the show's.
+        assertThat(
+            XtreamJson.seriesTmdbId(obj("""{"info":{"name":"Breaking Bad"},"episodes":{"1":[{"id":"1","info":{"tmdb_id":62085}}]}}""")),
+        ).isNull()
+    }
 }

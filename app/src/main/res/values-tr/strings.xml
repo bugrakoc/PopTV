@@ -262,6 +262,15 @@
     <string name="buffer_large">Büyük (daha az kesinti)</string>
     <string name="settings_user_agent">Kullanıcı aracısı (User-Agent)</string>
     <string name="settings_user_agent_help">Bazı sağlayıcılar tanımadıkları oynatıcıları engeller. Varsayılan değer VLC olarak tanıtır.</string>
+    <string name="settings_audio_language">Ses dili</string>
+    <string name="settings_audio_language_value">%1$s (film ve diziler; canlı TV cihaz dilini kullanır)</string>
+    <string name="settings_fallback_audio">Orijinal bilinmiyorsa</string>
+    <string name="audio_original">Orijinal dil</string>
+    <string name="audio_original_detail">TMDB anahtarı varsa TMDB\'den, yoksa ses parçalarından tahmin edilir</string>
+    <string name="settings_subtitles_for_english">İngilizce seste altyazı</string>
+    <string name="settings_subtitles_for_turkish">Türkçe seste altyazı</string>
+    <string name="settings_subtitles_for_other">Diğer dillerde altyazı</string>
+    <string name="settings_subtitles_for_other_value">%1$s (seçilen altyazı yoksa da kullanılır)</string>
     <string name="settings_subtitle_size">Altyazı boyutu</string>
     <string name="size_small">Küçük</string>
     <string name="size_normal">Normal</string>

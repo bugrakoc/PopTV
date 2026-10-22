@@ -73,7 +73,7 @@ fun channelLabel(channels: Int): String? = when {
     else -> pluralStringResource(R.plurals.player_audio_channels, channels, channels)
 }
 
-private fun languageName(code: String?): String? {
+fun languageName(code: String?): String? {
     if (code.isNullOrBlank()) return null
     val locale = Locale.forLanguageTag(code)
     val name = locale.getDisplayLanguage(Locale.getDefault())

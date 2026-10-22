@@ -14,6 +14,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.TrackSelectionOverride
 import androidx.media3.common.Tracks
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.common.util.Util
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.ExoPlayer
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import pm.koc.poptv.data.db.StreamEntity
 import pm.koc.poptv.data.net.UserAgentHolder
 import pm.koc.poptv.data.prefs.AppSettings
@@ -39,6 +41,7 @@ import pm.koc.poptv.data.prefs.DecoderMode
 import pm.koc.poptv.data.prefs.SettingsRepository
 import pm.koc.poptv.data.repo.EpgRepository
 import pm.koc.poptv.data.repo.LibraryRepository
+import pm.koc.poptv.data.repo.OriginalLanguageRepository
 import pm.koc.poptv.data.repo.PlaybackRepository
 import pm.koc.poptv.di.ApplicationScope
 import pm.koc.poptv.domain.ContentType
@@ -52,10 +55,12 @@ import pm.koc.poptv.player.PlayerFactory
 import pm.koc.poptv.player.PlayerStatus
 import pm.koc.poptv.player.PlayerUiState
 import pm.koc.poptv.player.ResizeMode
+import pm.koc.poptv.player.TrackDefaults
 import pm.koc.poptv.player.TrackKind
 import pm.koc.poptv.player.TrackOption
 import pm.koc.poptv.player.UpNext
 import pm.koc.poptv.ui.nav.PlayerRoute
+import java.util.Locale
 import javax.inject.Inject
 
 /**
@@ -71,6 +76,7 @@ class PlayerViewModel @Inject constructor(
     private val library: LibraryRepository,
     private val playback: PlaybackRepository,
     private val epg: EpgRepository,
+    private val originalLanguages: OriginalLanguageRepository,
     private val settingsRepository: SettingsRepository,
     private val userAgent: UserAgentHolder,
     @param:ApplicationScope private val appScope: CoroutineScope,
@@ -102,6 +108,13 @@ class PlayerViewModel @Inject constructor(
     private var bufferingSince = -1L
     private var lastSaveAt = 0L
     private var droppedFrames = 0
+    /** Stream whose default track languages are applied to the current player. */
+    private var trackDefaultsKey: String? = null
+    /** Waiting for a movie's or episode's tracks to pick its default audio and subtitle tracks. */
+    private var trackRulesPending = false
+    /** TMDB original language of [originalLanguageKey]'s title, looked up once per stream. */
+    private var originalLanguage: String? = null
+    private var originalLanguageKey: String? = null
 
     private var retryJob: Job? = null
     private var bannerJob: Job? = null
@@ -139,6 +152,7 @@ class PlayerViewModel @Inject constructor(
         p.addListener(listener)
         p.addAnalyticsListener(analytics)
         _player.value = p
+        trackDefaultsKey = null
         if (session == null) {
             session = runCatching {
                 MediaSession.Builder(context, p).setId("poptv-${System.nanoTime()}").build()
@@ -256,8 +270,17 @@ class PlayerViewModel @Inject constructor(
                 forceHls = forceHls,
                 subtitleUrl = stream.subtitleUrl,
             )
+            if (!isLive && originalLanguageKey != stream.key) {
+                originalLanguage = lookupOriginalLanguage(stream)
+                originalLanguageKey = stream.key
+            }
             val source = factory.createMediaSource(request, userAgent.value)
             val player = _player.value ?: return@launch
+            // Reconnects keep the user's manual track choices; a new stream or player starts from the defaults.
+            if (trackDefaultsKey != stream.key) {
+                applyTrackDefaults(player, isLive)
+                trackDefaultsKey = stream.key
+            }
             if (start == C.TIME_UNSET) player.setMediaSource(source, true) else player.setMediaSource(source, start)
             player.setPlaybackSpeed(if (isLive) 1f else _ui.value.speed)
             player.prepare()
@@ -508,6 +531,82 @@ class PlayerViewModel @Inject constructor(
         p.trackSelectionParameters = builder.build()
     }
 
+    /**
+     * TMDB original language of a movie or an episode's show. Cached lookups (the detail screen already
+     * made one) return at once; a slow network lookup is not waited for, and null when TMDB is off.
+     */
+    private suspend fun lookupOriginalLanguage(stream: StreamEntity): String? {
+        if (_settings.value.audioLanguage != AppSettings.ORIGINAL) return null
+        return withTimeoutOrNull(ORIGINAL_LOOKUP_MS) { originalLanguages.of(stream) }
+    }
+
+    /**
+     * Drops the previous stream's manual track choices and applies the language settings. Subtitles of
+     * movies and episodes stay off until [applyTrackRules] knows which audio track plays.
+     */
+    private fun applyTrackDefaults(p: ExoPlayer, isLive: Boolean) {
+        val audio = TrackDefaults.startAudioLanguage(_settings.value, isLive, Locale.getDefault().language, originalLanguage)
+        p.trackSelectionParameters = p.trackSelectionParameters.buildUpon()
+            .clearOverrides()
+            .setTrackTypeDisabled(C.TRACK_TYPE_TEXT, !isLive)
+            .setPreferredAudioLanguage(audio)
+            .setPreferredTextLanguage(null)
+            .build()
+        trackRulesPending = !isLive
+    }
+
+    /**
+     * Once a movie's or episode's tracks are known: picks the default audio track ([TrackDefaults.pickAudio])
+     * and the subtitles for that audio's language ([TrackDefaults.subtitleLanguages]).
+     */
+    private fun applyTrackRules(tracks: Tracks) {
+        if (tracks.groups.isEmpty()) return
+        trackRulesPending = false
+        val p = _player.value ?: return
+        val s = _settings.value
+        val audio = tracks.groups.filter { it.type == C.TRACK_TYPE_AUDIO }.flatMap { g -> (0 until g.length).map { g to it } }
+        val infos = audio.map { (g, i) ->
+            val f = g.getTrackFormat(i)
+            TrackDefaults.AudioTrack(f.language?.let(Util::normalizeLanguageCode), f.label, g.isTrackSupported(i, true))
+        }
+        val pick = TrackDefaults.pickAudio(infos, s, originalLanguage, Locale.getDefault().language)
+        val builder = p.trackSelectionParameters.buildUpon()
+        var chosen = audio.indexOfFirst { (g, i) -> g.isTrackSelected(i) }
+        if (pick != null && pick.index != chosen) {
+            val (g, i) = audio[pick.index]
+            builder.setOverrideForType(TrackSelectionOverride(g.mediaTrackGroup, i))
+            chosen = pick.index
+        }
+        val language = infos.getOrNull(chosen)?.language
+
+        val text = tracks.groups.filter { it.type == C.TRACK_TYPE_TEXT }.flatMap { g -> (0 until g.length).map { g to it } }
+        val textInfos = text.map { (g, i) ->
+            val f = g.getTrackFormat(i)
+            TrackDefaults.TextTrack(
+                language = f.language?.let(Util::normalizeLanguageCode),
+                label = f.label,
+                forced = f.selectionFlags and C.SELECTION_FLAG_FORCED != 0,
+                hearingImpaired = f.roleFlags and C.ROLE_FLAG_DESCRIBES_MUSIC_AND_SOUND != 0,
+                supported = g.isTrackSupported(i, true),
+            )
+        }
+        val subtitleLanguages = TrackDefaults.subtitleLanguages(language, s)
+        val subtitles = TrackDefaults.pickSubtitles(textInfos, subtitleLanguages)
+        if (subtitles != null) {
+            val (g, i) = text[subtitles.index]
+            builder.setTrackTypeDisabled(C.TRACK_TYPE_TEXT, false).setOverrideForType(TrackSelectionOverride(g.mediaTrackGroup, i))
+        }
+        fun describe(language: String?, label: String?) = listOfNotNull(language ?: "und", label).joinToString("/")
+        Log.i(
+            TAG,
+            "Audio tracks ${infos.map { describe(it.language, it.label) }}, original ${originalLanguage ?: "unknown"}: " +
+                "playing ${language ?: "und"} (${pick?.reason ?: "player default"}). " +
+                "Subtitle tracks ${textInfos.map { describe(it.language, it.label) }}, wanted $subtitleLanguages: " +
+                (subtitles?.let { describe(textInfos[it.index].language, textInfos[it.index].label) } ?: "off"),
+        )
+        p.trackSelectionParameters = builder.build()
+    }
+
     fun selectAutoAudio() {
         val p = _player.value ?: return
         p.trackSelectionParameters = p.trackSelectionParameters.buildUpon().clearOverridesOfType(C.TRACK_TYPE_AUDIO).build()
@@ -697,6 +796,7 @@ class PlayerViewModel @Inject constructor(
     }
 
     private fun updateTracks(tracks: Tracks) {
+        if (trackRulesPending) applyTrackRules(tracks)
         val audio = ArrayList<TrackOption>()
         val text = ArrayList<TrackOption>()
         tracks.groups.forEachIndexed { groupIndex, group ->
@@ -737,5 +837,6 @@ class PlayerViewModel @Inject constructor(
         const val BANNER_MS = 5_000L
         const val ZAP_DEBOUNCE_MS = 350L
         const val NUMBER_ENTRY_MS = 2_000L
+        const val ORIGINAL_LOOKUP_MS = 2_000L
     }
 }

@@ -18,6 +18,7 @@ data class TmdbMovieResult(
     @SerialName("backdrop_path") val backdropPath: String? = null,
     @SerialName("vote_average") val voteAverage: Double? = null,
     @SerialName("release_date") val releaseDate: String? = null,
+    @SerialName("original_language") val originalLanguage: String? = null,
 )
 
 @Serializable
@@ -29,11 +30,13 @@ data class TmdbTvResult(
     @SerialName("backdrop_path") val backdropPath: String? = null,
     @SerialName("vote_average") val voteAverage: Double? = null,
     @SerialName("first_air_date") val firstAirDate: String? = null,
+    @SerialName("original_language") val originalLanguage: String? = null,
 )
 
 @Serializable
 data class TmdbDetails(
     val overview: String? = null,
+    @SerialName("original_language") val originalLanguage: String? = null,
     val genres: List<TmdbGenre> = emptyList(),
     val credits: TmdbCredits? = null,
 )

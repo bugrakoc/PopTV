@@ -60,6 +60,14 @@ class XtreamClient @Inject constructor(
             XtreamJson.episodes(decodeObject(input))
         }
 
+    suspend fun vodTmdbId(account: XtreamAccount, vodId: String): Long? =
+        downloader.download(account.apiUrl("get_vod_info", "vod_id" to vodId)) { input -> XtreamJson.vodTmdbId(decodeObject(input)) }
+
+    suspend fun seriesTmdbId(account: XtreamAccount, seriesId: String): Long? =
+        downloader.download(account.apiUrl("get_series_info", "series_id" to seriesId)) { input ->
+            XtreamJson.seriesTmdbId(decodeObject(input))
+        }
+
     private fun decodeObject(input: InputStream): JsonObject = try {
         json.decodeFromStream(JsonObject.serializer(), input)
     } catch (e: IllegalArgumentException) { // SerializationException included

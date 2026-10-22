@@ -30,6 +30,13 @@ data class XtreamAccount(
     private fun streamUrl(kind: String, id: String, extension: String): String =
         "$baseUrl$kind/${path(username)}/${path(password)}/${path(id)}.$extension"
 
+    /** The stream id of a [movieUrl] on this account, or null for any other URL. */
+    fun movieId(url: String): String? {
+        val prefix = "${baseUrl}movie/${path(username)}/${path(password)}/"
+        if (!url.startsWith(prefix)) return null
+        return url.substring(prefix.length).substringBefore('.').takeIf { it.isNotEmpty() && '/' !in it }
+    }
+
     override fun toString(): String = "XtreamAccount(${UrlUtils.redact(apiUrl())})"
 
     companion object {

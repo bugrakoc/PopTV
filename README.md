@@ -82,6 +82,14 @@ PopTV does not include any content or playlists. It plays what your own provider
 - Decoder mode: **Hardware (default) / Prefer software / Auto**. It works through a custom
   `MediaCodecSelector` together with `setEnableDecoderFallback(true)`. Tunneled playback is an option and is
   off by default.
+- Default audio for movies and episodes is the **original language**: TMDB's original language when a key
+  is set (using the TMDB id from the Xtream API when the provider has one, else a title search), else a
+  track labelled "original", else the only language besides a dub in the device language (Turkish +
+  Japanese → Japanese), else English.
+- Default subtitles depend on the audio that plays: English audio → English, Turkish audio → off, any other
+  language → Turkish. A missing language falls back to the "other languages" choice, then English. Full
+  subtitles are preferred over SDH and forced tracks. All of this is adjustable in Settings; live TV keeps
+  the device language without subtitles.
 - Audio track, subtitle track (embedded or sidecar) and subtitle style; speed, aspect/zoom; a stream info
   panel showing resolution, codec, HDR type, bitrate, decoder name and whether it is hardware or software.
 - Audio passthrough (AC-3/E-AC-3) when the TV/AVR reports support.

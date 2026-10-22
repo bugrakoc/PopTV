@@ -81,6 +81,11 @@ class SettingsRepository @Inject constructor(
     suspend fun setSubtitleSize(value: SubtitleSize) = store.edit { it[K.subtitleSize] = value.name }
     suspend fun setSubtitleColor(value: SubtitleColor) = store.edit { it[K.subtitleColor] = value.name }
     suspend fun setSubtitleBackground(value: Boolean) = store.edit { it[K.subtitleBackground] = value }
+    suspend fun setAudioLanguage(value: String) = store.edit { it[K.audioLanguage] = value }
+    suspend fun setFallbackAudioLanguage(value: String) = store.edit { it[K.fallbackAudioLanguage] = value }
+    suspend fun setSubtitlesForEnglish(value: String) = store.edit { it[K.subtitlesForEnglish] = value }
+    suspend fun setSubtitlesForTurkish(value: String) = store.edit { it[K.subtitlesForTurkish] = value }
+    suspend fun setSubtitlesForOther(value: String) = store.edit { it[K.subtitlesForOther] = value }
     suspend fun setAutoplayNext(value: Boolean) = store.edit { it[K.autoplayNext] = value }
     suspend fun setShowOriginalNames(value: Boolean) = store.edit { it[K.showOriginalNames] = value }
     suspend fun setInvertChannelKeys(value: Boolean) = store.edit { it[K.invertChannelKeys] = value }
@@ -121,6 +126,11 @@ class SettingsRepository @Inject constructor(
         subtitleSize = enumOr(this[K.subtitleSize], SubtitleSize.NORMAL),
         subtitleColor = enumOr(this[K.subtitleColor], SubtitleColor.WHITE),
         subtitleBackground = this[K.subtitleBackground] ?: true,
+        audioLanguage = this[K.audioLanguage] ?: AppSettings.ORIGINAL,
+        fallbackAudioLanguage = this[K.fallbackAudioLanguage] ?: "en",
+        subtitlesForEnglish = this[K.subtitlesForEnglish] ?: "en",
+        subtitlesForTurkish = this[K.subtitlesForTurkish] ?: "",
+        subtitlesForOther = this[K.subtitlesForOther] ?: "tr",
         autoplayNext = this[K.autoplayNext] ?: true,
         showOriginalNames = this[K.showOriginalNames] ?: false,
         invertChannelKeys = this[K.invertChannelKeys] ?: false,
@@ -155,6 +165,11 @@ class SettingsRepository @Inject constructor(
         val subtitleSize = stringPreferencesKey("subtitle_size")
         val subtitleColor = stringPreferencesKey("subtitle_color")
         val subtitleBackground = booleanPreferencesKey("subtitle_background")
+        val audioLanguage = stringPreferencesKey("audio_language")
+        val fallbackAudioLanguage = stringPreferencesKey("fallback_audio_language")
+        val subtitlesForEnglish = stringPreferencesKey("subtitles_for_english")
+        val subtitlesForTurkish = stringPreferencesKey("subtitles_for_turkish")
+        val subtitlesForOther = stringPreferencesKey("subtitles_for_other")
         val autoplayNext = booleanPreferencesKey("autoplay_next")
         val showOriginalNames = booleanPreferencesKey("show_original_names")
         val invertChannelKeys = booleanPreferencesKey("invert_channel_keys")

@@ -61,6 +61,11 @@ class SettingsViewModel @Inject constructor(
     fun setSubtitleSize(size: SubtitleSize) = launch { settings.setSubtitleSize(size) }
     fun setSubtitleColor(color: SubtitleColor) = launch { settings.setSubtitleColor(color) }
     fun setSubtitleBackground(on: Boolean) = launch { settings.setSubtitleBackground(on) }
+    fun setAudioLanguage(code: String) = launch { settings.setAudioLanguage(code) }
+    fun setFallbackAudioLanguage(code: String) = launch { settings.setFallbackAudioLanguage(code) }
+    fun setSubtitlesForEnglish(code: String) = launch { settings.setSubtitlesForEnglish(code) }
+    fun setSubtitlesForTurkish(code: String) = launch { settings.setSubtitlesForTurkish(code) }
+    fun setSubtitlesForOther(code: String) = launch { settings.setSubtitlesForOther(code) }
     fun setAutoplayNext(on: Boolean) = launch { settings.setAutoplayNext(on) }
     fun setInvertChannelKeys(on: Boolean) = launch { settings.setInvertChannelKeys(on) }
     fun setShowOriginalNames(on: Boolean) = launch { settings.setShowOriginalNames(on) }

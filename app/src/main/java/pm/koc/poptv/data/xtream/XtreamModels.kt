@@ -122,6 +122,17 @@ object XtreamJson {
         return out
     }
 
+    /** TMDB movie id from `get_vod_info`: `info.tmdb_id` (some panels: `info.tmdb`). */
+    fun vodTmdbId(root: JsonObject): Long? = (root["info"] as? JsonObject)?.let { it.tmdbId("tmdb_id") ?: it.tmdbId("tmdb") }
+
+    /**
+     * TMDB show id from `get_series_info`: `info.tmdb` or `info.tmdb_id`. Episodes carry TMDB *episode* ids,
+     * which are not show ids, so they are never used.
+     */
+    fun seriesTmdbId(root: JsonObject): Long? = (root["info"] as? JsonObject)?.let { it.tmdbId("tmdb") ?: it.tmdbId("tmdb_id") }
+
+    private fun JsonObject.tmdbId(name: String): Long? = text(name)?.toLongOrNull()?.takeIf { it > 0 }
+
     private fun JsonObject.categoryId(): String? =
         text("category_id") ?: (this["category_ids"] as? JsonArray)?.firstNotNullOfOrNull { it.textOrNull() }
 

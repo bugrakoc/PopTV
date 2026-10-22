@@ -59,7 +59,10 @@ PopTV does not include any content or playlists. It plays what your own provider
   3. A manual XMLTV URL from Settings.
 - Supports gzip (`.xml.gz`) and plain XML. Uses a streaming parser and keeps only 6 h of past and 3 days of
   future programmes.
-- Matches guide channels by `tvg-id`, then by normalized channel name. Time offset is configurable.
+- Matches guide channels by `tvg-id`, then by normalized channel name. Name matches respect the channel's
+  country (from its name prefix, group title or `tvg-id` suffix), so "DE: Eurosport 1" never gets the
+  Turkish Eurosport guide; a channel without a guide from its own country shows none. A `tvg-id` that many
+  unrelated channels share is treated as a provider placeholder and ignored. Time offset is configurable.
 - A full-screen grid you can move around with the D-pad, plus a programme detail dialog. The guide refreshes
   every 12 h by default.
 - If no guide is found, PopTV says so once and works normally.

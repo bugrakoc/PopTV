@@ -165,7 +165,9 @@ class EpgRepository @Inject constructor(
         try {
             val stats = withContext(Dispatchers.IO) {
                 file.inputStream().use { input ->
-                    val channels = ArrayList<EpgChannelEntity>()
+                    // Provider guides repeat a <channel> id once per playlist entry ("beIN SPORTS 1 HD",
+                    // "beIN SPORTS 1 FHD", ...); all their names are kept for name matching.
+                    val channels = LinkedHashMap<String, EpgChannelEntity>()
                     val progs = ArrayList<ProgramEntity>(BATCH)
                     val parser = XmltvParser({ Xml.newPullParser() }, Locale.getDefault().language)
                     val result = parser.parse(
@@ -173,18 +175,17 @@ class EpgRepository @Inject constructor(
                         windowStart = windowStart,
                         windowEnd = windowEnd,
                         onChannel = { c ->
-                            channels.add(
-                                EpgChannelEntity(
-                                    id = c.id,
-                                    displayName = c.displayNames.firstOrNull() ?: c.id,
-                                    nameKeys = c.displayNames.map(EpgMatcher::nameKey).distinct().joinToString("|"),
-                                    icon = c.icon,
-                                ),
+                            val keys = c.displayNames.map(EpgMatcher::nameKey)
+                            val previous = channels[c.id]
+                            channels[c.id] = previous?.copy(
+                                nameKeys = (previous.nameKeys.split('|') + keys).filter { it.isNotEmpty() }.distinct().joinToString("|"),
+                                icon = previous.icon ?: c.icon,
+                            ) ?: EpgChannelEntity(
+                                id = c.id,
+                                displayName = c.displayNames.firstOrNull() ?: c.id,
+                                nameKeys = keys.distinct().joinToString("|"),
+                                icon = c.icon,
                             )
-                            if (channels.size >= BATCH) {
-                                batches.trySendBlocking(Batch(ArrayList(channels), emptyList())).getOrThrow()
-                                channels.clear()
-                            }
                         },
                     ) { p ->
                         if (!job.isActive) throw CancellationException("epg cancelled")
@@ -196,7 +197,7 @@ class EpgRepository @Inject constructor(
                             _state.value = EpgRefreshState.Running(programmes)
                         }
                     }
-                    batches.trySendBlocking(Batch(ArrayList(channels), ArrayList(progs))).getOrThrow()
+                    batches.trySendBlocking(Batch(channels.values.toList(), ArrayList(progs))).getOrThrow()
                     result
                 }
             }

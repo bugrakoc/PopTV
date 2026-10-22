@@ -5,6 +5,7 @@ import androidx.room.withTransaction
 import pm.koc.poptv.core.TextNormalizer
 import pm.koc.poptv.data.db.AppDatabase
 import pm.koc.poptv.data.db.ShowEntity
+import pm.koc.poptv.data.epg.ChannelRegion
 import pm.koc.poptv.data.epg.EpgMatcher
 import pm.koc.poptv.data.prefs.SettingsRepository
 import pm.koc.poptv.domain.AdultContent
@@ -84,9 +85,15 @@ class LibraryIndexer @Inject constructor(
     /** Recomputes `streams.epgChannelId` for all live channels. Returns the number of matched channels. */
     suspend fun rematchEpg(): Int {
         val guide = db.epgDao().channels().map { c ->
-            EpgMatcher.GuideChannel(c.id, c.nameKeys.split('|').filter { it.isNotEmpty() })
+            EpgMatcher.GuideChannel(
+                id = c.id,
+                nameKeys = c.nameKeys.split('|').filter { it.isNotEmpty() },
+                regions = ChannelRegion.ofGuideChannel(c.id, c.displayName),
+            )
         }
-        val channels = db.streamDao().channelMatchRows().map { EpgMatcher.Channel(it.key, it.tvgId, it.epgNameKey) }
+        val channels = db.streamDao().channelMatchRows().map {
+            EpgMatcher.Channel(it.key, it.tvgId, it.epgNameKey, ChannelRegion.ofPlaylistChannel(it.name, it.groupTitle))
+        }
         val matches = EpgMatcher.match(channels, guide)
         db.withTransaction {
             db.streamDao().clearEpgMatches()

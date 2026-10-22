@@ -35,6 +35,8 @@ data class ChannelMatchRow(
     val key: String,
     val tvgId: String?,
     val epgNameKey: String,
+    val name: String,
+    val groupTitle: String,
 )
 
 @Dao
@@ -175,7 +177,7 @@ interface StreamDao {
 
     // ---- EPG matching ----
 
-    @Query("SELECT `key`, tvgId, epgNameKey FROM streams WHERE type = 'LIVE'")
+    @Query("SELECT `key`, tvgId, epgNameKey, name, groupTitle FROM streams WHERE type = 'LIVE'")
     suspend fun channelMatchRows(): List<ChannelMatchRow>
 
     @Query("UPDATE streams SET epgChannelId = NULL WHERE epgChannelId IS NOT NULL")

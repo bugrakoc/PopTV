@@ -36,6 +36,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -51,6 +52,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.tv.material3.Border
 import androidx.tv.material3.ClickableSurfaceDefaults
@@ -77,6 +81,9 @@ import pm.koc.poptv.ui.components.ScreenHorizontalPadding
 import pm.koc.poptv.ui.components.safeRequestFocus
 import pm.koc.poptv.ui.menu.ShowMenu
 import pm.koc.poptv.ui.menu.StreamMenu
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HomeScreen(
@@ -142,7 +149,9 @@ fun HomeScreen(
                     }
                     if (status != null) {
                         Text(status, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Spacer(Modifier.width(24.dp))
                     }
+                    Clock()
                 }
                 Spacer(Modifier.height(12.dp))
                 LazyRow(
@@ -366,4 +375,27 @@ private fun NavTile(icon: ImageVector, label: String, onClick: () -> Unit, modif
             Text(label, style = MaterialTheme.typography.titleSmall, maxLines = 1)
         }
     }
+}
+
+private val ClockFormat = DateTimeFormatter.ofPattern("HH:mm")
+
+/** 24h wall clock, ticking on minute boundaries while the screen is started. */
+@Composable
+private fun Clock(modifier: Modifier = Modifier) {
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    LaunchedEffect(lifecycleOwner) {
+        // Restarting on STARTED re-reads the time after the TV wakes from standby.
+        lifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+            while (true) {
+                now = System.currentTimeMillis()
+                delay(60_000 - now % 60_000)
+            }
+        }
+    }
+    Text(
+        ClockFormat.format(Instant.ofEpochMilli(now).atZone(ZoneId.systemDefault())),
+        style = MaterialTheme.typography.headlineMedium,
+        modifier = modifier,
+    )
 }

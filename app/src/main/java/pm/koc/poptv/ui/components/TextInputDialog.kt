@@ -20,6 +20,8 @@ import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Text
 import pm.koc.poptv.R
+import pm.koc.poptv.ui.LocalIsTv
+import pm.koc.poptv.ui.phone.PhoneTextInputDialog
 
 /** Dialog with a single text field plus Save / Cancel (and an optional extra action like "Reset"). */
 @Composable
@@ -35,6 +37,10 @@ fun TextInputDialog(
     extraLabel: String? = null,
     onExtra: (() -> Unit)? = null,
 ) {
+    if (!LocalIsTv.current) {
+        PhoneTextInputDialog(title, initial, placeholder, onSave, onDismiss, message, keyboardType, secret, extraLabel, onExtra)
+        return
+    }
     var value by remember { mutableStateOf(initial) }
     val saveFocus = remember { FocusRequester() }
     TvDialog(onDismissRequest = onDismiss, title = title) {

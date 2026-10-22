@@ -15,6 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
+import pm.koc.poptv.ui.LocalIsTv
+import pm.koc.poptv.ui.phone.PhoneScreen
 
 /** TV overscan-safe padding (5% of 960x540dp roughly). */
 val ScreenHorizontalPadding = 48.dp
@@ -28,6 +30,10 @@ fun ScreenScaffold(
     actions: @Composable () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    if (!LocalIsTv.current) {
+        PhoneScreen(title = title, modifier = modifier, subtitle = subtitle, actions = { actions() }, content = content)
+        return
+    }
     Column(
         modifier
             .fillMaxSize()

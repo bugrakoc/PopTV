@@ -72,6 +72,7 @@ kotlin {
     compilerOptions {
         optIn.addAll(
             "androidx.tv.material3.ExperimentalTvMaterial3Api",
+            "androidx.compose.material3.ExperimentalMaterial3Api",
             "androidx.compose.ui.ExperimentalComposeUiApi",
             "androidx.compose.foundation.ExperimentalFoundationApi",
         )
@@ -92,6 +93,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.androidx.tv.material)
+    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.room.runtime)

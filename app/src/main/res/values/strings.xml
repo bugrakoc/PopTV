@@ -325,4 +325,14 @@
         <item quantity="one">%d channel</item>
         <item quantity="other">%d channels</item>
     </plurals>
+
+    <!-- Phone UI -->
+    <string name="nav_home">Home</string>
+    <string name="action_clear">Clear</string>
+    <string name="live_favorites_hint_touch">Press and hold a channel, then choose Add to favorites.</string>
+    <string name="guide_earlier">Earlier</string>
+    <string name="guide_later">Later</string>
+    <string name="player_failed_swipe_hint">Swipe up or down to switch to another channel.</string>
+    <string name="player_previous_channel">Previous channel</string>
+    <string name="player_next_channel">Next channel</string>
 </resources>

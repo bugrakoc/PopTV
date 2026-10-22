@@ -4,9 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import dagger.hilt.android.AndroidEntryPoint
+import pm.koc.poptv.ui.LocalIsTv
+import pm.koc.poptv.ui.isTelevision
 import pm.koc.poptv.ui.nav.PopTvNavHost
+import pm.koc.poptv.ui.phone.PhoneNavHost
+import pm.koc.poptv.ui.theme.PopTVPhoneTheme
 import pm.koc.poptv.ui.theme.PopTVTheme
 
 @AndroidEntryPoint
@@ -21,9 +26,14 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefillUrl.value = intent?.getStringExtra(EXTRA_PLAYLIST_URL)
+        val tv = isTelevision()
         setContent {
-            PopTVTheme {
-                PopTvNavHost(prefillUrl = prefillUrl.value)
+            CompositionLocalProvider(LocalIsTv provides tv) {
+                if (tv) {
+                    PopTVTheme { PopTvNavHost(prefillUrl = prefillUrl.value) }
+                } else {
+                    PopTVPhoneTheme { PhoneNavHost(prefillUrl = prefillUrl.value) }
+                }
             }
         }
     }

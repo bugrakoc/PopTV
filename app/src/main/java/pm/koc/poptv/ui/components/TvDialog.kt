@@ -23,6 +23,8 @@ import androidx.tv.material3.OutlinedButton
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
+import pm.koc.poptv.ui.LocalIsTv
+import pm.koc.poptv.ui.phone.PhoneConfirmDialog
 
 /** A basic TV dialog: title, optional body, and the given content. */
 @Composable
@@ -57,6 +59,10 @@ fun ConfirmDialog(
     onDismiss: () -> Unit,
     message: String? = null,
 ) {
+    if (!LocalIsTv.current) {
+        PhoneConfirmDialog(title, confirmLabel, dismissLabel, onConfirm, onDismiss, message)
+        return
+    }
     val focus = remember { FocusRequester() }
     TvDialog(onDismissRequest = onDismiss, title = title) {
         if (message != null) {

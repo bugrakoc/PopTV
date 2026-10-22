@@ -1,6 +1,7 @@
 package pm.koc.poptv.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -19,12 +20,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.tv.material3.FilterChip
-import androidx.tv.material3.ListItem
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.Text
 import pm.koc.poptv.R
 import pm.koc.poptv.domain.CategoryOverride
+import pm.koc.poptv.ui.LocalIsTv
+import pm.koc.poptv.ui.components.AdaptiveFilterChip
+import pm.koc.poptv.ui.components.AdaptiveListItem
 import pm.koc.poptv.ui.components.Choice
 import pm.koc.poptv.ui.components.ChoiceDialog
 import pm.koc.poptv.ui.components.EmptyState
@@ -41,11 +43,9 @@ fun CategorySettingsScreen(viewModel: CategorySettingsViewModel = hiltViewModel(
         title = stringResource(R.string.settings_categories),
         subtitle = stringResource(R.string.settings_categories_help),
     ) {
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(horizontal = if (LocalIsTv.current) 0.dp else 16.dp)) {
             items(CategorySettingsViewModel.Filter.entries) { f ->
-                FilterChip(selected = state.filter == f, onClick = { viewModel.setFilter(f) }) {
-                    Text(stringResource(f.labelRes()))
-                }
+                AdaptiveFilterChip(selected = state.filter == f, onClick = { viewModel.setFilter(f) }, label = stringResource(f.labelRes()))
             }
         }
         Spacer(Modifier.height(8.dp))
@@ -60,16 +60,11 @@ fun CategorySettingsScreen(viewModel: CategorySettingsViewModel = hiltViewModel(
         LazyColumn(state = rememberLazyListState(), verticalArrangement = Arrangement.spacedBy(4.dp)) {
             items(visible, key = { it.groupTitle }) { group ->
                 val detected = group.detectedType.label()
-                ListItem(
-                    selected = false,
+                AdaptiveListItem(
+                    headline = group.groupTitle.ifBlank { stringResource(R.string.category_uncategorized) },
+                    supporting = pluralStringResource(R.plurals.items_count, group.count, group.count),
                     onClick = { editing = group.groupTitle },
-                    headlineContent = {
-                        Text(group.groupTitle.ifBlank { stringResource(R.string.category_uncategorized) })
-                    },
-                    supportingContent = {
-                        Text(pluralStringResource(R.plurals.items_count, group.count, group.count))
-                    },
-                    trailingContent = {
+                    trailing = {
                         Row {
                             Text(
                                 if (group.override == null) stringResource(R.string.type_auto, detected) else group.override.label(),

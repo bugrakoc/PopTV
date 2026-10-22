@@ -96,7 +96,7 @@ import pm.koc.poptv.ui.live.ChannelBrowser
 import pm.koc.poptv.ui.live.ChannelBrowserViewModel
 
 private enum class Overlay { NONE, CHANNELS, CONTROLS }
-private enum class PlayerDialog { AUDIO, SUBTITLES, SPEED, ASPECT }
+internal enum class PlayerDialog { AUDIO, SUBTITLES, SPEED, ASPECT }
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -457,6 +457,12 @@ fun PlayerScreen(
         dialog = null
         if (ui.isLive) overlay = Overlay.NONE
     }
+    dialog?.let { PlayerChoiceDialog(it, ui, viewModel, onClose = ::closeDialog) }
+}
+
+/** Audio / subtitle track, speed and aspect choices, shared by the TV and phone players. */
+@Composable
+internal fun PlayerChoiceDialog(dialog: PlayerDialog, ui: PlayerUiState, viewModel: PlayerViewModel, onClose: () -> Unit) {
     when (dialog) {
         PlayerDialog.AUDIO -> {
             val choices = buildList<Choice<Int>> {
@@ -469,9 +475,9 @@ fun PlayerScreen(
                 selected = ui.audioTracks.indexOfFirst { it.selected }.takeIf { it >= 0 } ?: -1,
                 onSelect = { i ->
                     if (i < 0) viewModel.selectAutoAudio() else viewModel.selectTrack(ui.audioTracks[i])
-                    closeDialog()
+                    onClose()
                 },
-                onDismiss = { closeDialog() },
+                onDismiss = { onClose() },
             )
         }
         PlayerDialog.SUBTITLES -> {
@@ -485,9 +491,9 @@ fun PlayerScreen(
                 selected = if (ui.subtitlesOff) -1 else ui.textTracks.indexOfFirst { it.selected },
                 onSelect = { i ->
                     viewModel.selectTrack(if (i < 0) null else ui.textTracks[i])
-                    closeDialog()
+                    onClose()
                 },
-                onDismiss = { closeDialog() },
+                onDismiss = { onClose() },
             )
         }
         PlayerDialog.SPEED -> ChoiceDialog(
@@ -496,8 +502,8 @@ fun PlayerScreen(
                 Choice(it, if (it == 1f) stringResource(R.string.player_speed_normal) else "${it}×")
             },
             selected = ui.speed,
-            onSelect = { viewModel.setSpeed(it); closeDialog() },
-            onDismiss = { closeDialog() },
+            onSelect = { viewModel.setSpeed(it); onClose() },
+            onDismiss = { onClose() },
         )
         PlayerDialog.ASPECT -> ChoiceDialog(
             title = stringResource(R.string.player_aspect),
@@ -507,15 +513,14 @@ fun PlayerScreen(
                 Choice(ResizeMode.ZOOM, stringResource(R.string.player_aspect_zoom)),
             ),
             selected = ui.resizeMode,
-            onSelect = { viewModel.setResizeMode(it); closeDialog() },
-            onDismiss = { closeDialog() },
+            onSelect = { viewModel.setResizeMode(it); onClose() },
+            onDismiss = { onClose() },
         )
-        null -> Unit
     }
 }
 
 @Composable
-private fun episodeTitle(stream: pm.koc.poptv.data.db.StreamEntity): String {
+internal fun episodeTitle(stream: pm.koc.poptv.data.db.StreamEntity): String {
     val s = stream.season
     val e = stream.episode
     return if (s != null && e != null) stringResource(R.string.episode_code, s, e) + " · " + stream.displayName else stream.displayName
@@ -617,7 +622,7 @@ private fun ControlButton(icon: ImageVector, label: String, modifier: Modifier =
 }
 
 @OptIn(UnstableApi::class)
-private fun SubtitleView.applyStyle(settings: AppSettings) {
+internal fun SubtitleView.applyStyle(settings: AppSettings) {
     val fg = when (settings.subtitleColor) {
         SubtitleColor.WHITE -> android.graphics.Color.WHITE
         SubtitleColor.YELLOW -> android.graphics.Color.YELLOW

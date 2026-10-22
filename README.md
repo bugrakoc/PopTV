@@ -1,6 +1,7 @@
 # PopTV
 
-An IPTV player for Android TV / Google TV, built with Kotlin, Compose for TV and Media3 (ExoPlayer).
+An IPTV player for Android TV / Google TV and Android phones, built with Kotlin, Compose for TV, Material 3 and
+Media3 (ExoPlayer).
 You sign in with a single M3U playlist URL from your provider. PopTV sorts the playlist into **Live TV**,
 **Movies** and **TV Shows**, shows a **program guide**, and remembers where you stopped watching.
 
@@ -102,6 +103,14 @@ PopTV does not include any content or playlists. It plays what your own provider
   input is offered when the device supports it.
 - English and Turkish UI, following the device language.
 
+**Phones**
+- On phones and tablets PopTV uses a touch UI with a bottom bar (Home, Live TV, Movies, TV Shows, Guide).
+  Library, favorites, history and settings work the same as on TV.
+- Press and hold an item for its menu; categories are picked from a list at the top of each screen.
+- The guide scrolls sideways; the arrows move it two hours earlier or later.
+- The player goes fullscreen in landscape. Tap to show the controls; on videos, double-tap the left or right
+  half to skip 10 s; on live TV, swipe up or down to change channel or open the channel list.
+
 ## Building
 
 Requirements: Android Studio (recent) or the command line with JDK 17+ and the Android SDK (compileSdk 37).
@@ -165,6 +174,7 @@ data/      m3u parser · classifier · XMLTV parser/matcher · Room · DataStore
            TMDB · repositories · WorkManager workers
 player/    Media3 factory, decoder selector, error classification
 ui/        Compose for TV screens + ViewModels (Hilt, StateFlow, Paging 3)
+ui/phone/  Material 3 phone screens on the same ViewModels; shared dialogs and menus adapt to the device
 ```
 
 See `PLAN.md` for design decisions.

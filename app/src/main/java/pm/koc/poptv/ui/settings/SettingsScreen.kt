@@ -23,9 +23,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.tv.material3.ListItem
 import androidx.tv.material3.MaterialTheme
-import androidx.tv.material3.Switch
 import androidx.tv.material3.Text
 import kotlinx.coroutines.launch
 import pm.koc.poptv.R
@@ -37,6 +35,8 @@ import pm.koc.poptv.data.prefs.SubtitleColor
 import pm.koc.poptv.data.prefs.SubtitleSize
 import pm.koc.poptv.data.repo.EpgRefreshState
 import pm.koc.poptv.data.repo.ImportState
+import pm.koc.poptv.ui.components.AdaptiveListItem
+import pm.koc.poptv.ui.components.AdaptiveSwitchRow
 import pm.koc.poptv.ui.components.Choice
 import pm.koc.poptv.ui.components.ChoiceDialog
 import pm.koc.poptv.ui.components.ConfirmDialog
@@ -343,26 +343,12 @@ private fun LazyListScope.header(res: Int) {
 }
 
 @Composable
-private fun SettingRow(title: String, value: String?, modifier: Modifier = Modifier, onClick: () -> Unit) {
-    ListItem(
-        selected = false,
-        onClick = onClick,
-        headlineContent = { Text(title) },
-        supportingContent = value?.let { { Text(it, maxLines = 2) } },
-        modifier = modifier,
-    )
-}
+private fun SettingRow(title: String, value: String?, modifier: Modifier = Modifier, onClick: () -> Unit) =
+    AdaptiveListItem(headline = title, supporting = value, onClick = onClick, modifier = modifier)
 
 @Composable
-private fun SwitchRow(title: String, detail: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
-    ListItem(
-        selected = false,
-        onClick = { onChange(!checked) },
-        headlineContent = { Text(title) },
-        supportingContent = detail?.let { { Text(it, maxLines = 2) } },
-        trailingContent = { Switch(checked = checked, onCheckedChange = null) },
-    )
-}
+private fun SwitchRow(title: String, detail: String?, checked: Boolean, onChange: (Boolean) -> Unit) =
+    AdaptiveSwitchRow(title, detail, checked, onChange)
 
 @Composable
 private fun offsetLabel(minutes: Int): String = when {

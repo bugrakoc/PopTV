@@ -12,6 +12,8 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
+import pm.koc.poptv.ui.LocalIsTv
+import pm.koc.poptv.ui.phone.PhoneActionSheet
 
 /** One entry of a [ContextMenu]. Choosing it closes the menu unless [keepOpen] (it opens a follow-up dialog). */
 data class MenuAction(
@@ -21,9 +23,13 @@ data class MenuAction(
     val onClick: () -> Unit,
 )
 
-/** Long-press menu: a dialog listing [actions], the first one focused. */
+/** Long-press menu: a dialog listing [actions], the first one focused (a bottom sheet on phones). */
 @Composable
 fun ContextMenu(title: String, actions: List<MenuAction>, onDismiss: () -> Unit) {
+    if (!LocalIsTv.current) {
+        PhoneActionSheet(title, actions, onDismiss)
+        return
+    }
     TvDialog(onDismissRequest = onDismiss, title = title) {
         val first = remember { FocusRequester() }
         actions.forEachIndexed { i, action ->

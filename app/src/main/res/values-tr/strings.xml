@@ -323,4 +323,14 @@
         <item quantity="one">%d kanal</item>
         <item quantity="other">%d kanal</item>
     </plurals>
+
+    <!-- Telefon arayüzü -->
+    <string name="nav_home">Ana sayfa</string>
+    <string name="action_clear">Temizle</string>
+    <string name="live_favorites_hint_touch">Bir kanala basılı tutup Favorilere ekle\'yi seçin.</string>
+    <string name="guide_earlier">Daha önce</string>
+    <string name="guide_later">Daha sonra</string>
+    <string name="player_failed_swipe_hint">Başka bir kanala geçmek için yukarı veya aşağı kaydırın.</string>
+    <string name="player_previous_channel">Önceki kanal</string>
+    <string name="player_next_channel">Sonraki kanal</string>
 </resources>

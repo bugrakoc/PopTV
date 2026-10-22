@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
+import pm.koc.poptv.ui.LocalIsTv
+import pm.koc.poptv.ui.phone.PhoneChoiceDialog
 
 data class Choice<T>(val value: T, val label: String, val detail: String? = null)
 
@@ -27,6 +29,10 @@ fun <T> ChoiceDialog(
     onSelect: (T) -> Unit,
     onDismiss: () -> Unit,
 ) {
+    if (!LocalIsTv.current) {
+        PhoneChoiceDialog(title, choices, selected, onSelect, onDismiss)
+        return
+    }
     val focus = remember { FocusRequester() }
     val selectedIndex = choices.indexOfFirst { it.value == selected }.coerceAtLeast(0)
     TvDialog(onDismissRequest = onDismiss, title = title) {
